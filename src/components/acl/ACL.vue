@@ -24,7 +24,7 @@ import Button from 'vue-shared-components/src/components/button/Button';
 import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
 import PHNInput from './PHNInput';
-import DataService from '../services/data-service';
+import DataService from '../../services/data-service';
 
 export default {
   name: 'HelloWorld',

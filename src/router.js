@@ -1,5 +1,7 @@
 import VueRouter from 'vue-router';
-import ACL from './components/ACL';
+import ACL from './components/acl/ACL';
+import Enrolment from './components/enrolment/Enrolment';
+import EnrolmentHome from './components/enrolment/EnrolmentHome';
 
 const router = new VueRouter({
   mode: 'history',
@@ -10,9 +12,14 @@ const router = new VueRouter({
       children: []
     },
     { 
-      path: '/test',
-      component: ACL,
-      children: []
+      path: '/msp/enrolment',
+      component: Enrolment,
+      children: [
+        {
+          path: '/msp/enrolment/home',
+          component: EnrolmentHome
+        }
+      ]
     }
   ]
 });
