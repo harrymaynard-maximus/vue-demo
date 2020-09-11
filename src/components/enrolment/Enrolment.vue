@@ -1,7 +1,8 @@
 <template>
   <div>
     <Header name="Enrolment" :history="history" />
-    <div class="container">
+    <ProgressBar :routes='routes' :currentPath='$route.path' />
+    <div class="container py-5">
       <router-view></router-view>
     </div>
     <Footer />
@@ -11,16 +12,20 @@
 <script>
 import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
+import ProgressBar from '../common/ProgressBar';
+import routes from './routes';
 
 export default {
-  name: 'HelloWorld',
+  name: 'Enrolment',
   components: {
     Footer,
     Header,
+    ProgressBar
   },
   data: () => {
     return {
       history: {},
+      routes: routes
     };
   },
   methods: {
