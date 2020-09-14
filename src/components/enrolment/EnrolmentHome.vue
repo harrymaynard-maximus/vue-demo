@@ -11,18 +11,29 @@
     <Button label="Continue"
             styling="bcgov-normal-blue btn"
             v-on:button-click='nextPage' />
+            
+    <Modal v-if="isConcentModalOpen"
+           v-on:accept="closeModal"
+           :heading="'Information Collection Notice'"/>
   </div>
 </template>
 
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
 import Radio from 'vue-shared-components/src/components/radio/Radio';
+import Modal from '../common/Modal';
 
 export default {
   name: 'EnrolmentHome',
   components: {
     Button,
+    Modal,
     Radio
+  },
+  data: () => {
+    return {
+      isConcentModalOpen: true
+    };
   },
   methods: {
     nextPage: function () {
@@ -30,6 +41,9 @@ export default {
     },
     handleSelect: function(event) {
       console.log('event: ', event);
+    },
+    closeModal: function() {
+      this.isConcentModalOpen = false;
     }
   }
 }

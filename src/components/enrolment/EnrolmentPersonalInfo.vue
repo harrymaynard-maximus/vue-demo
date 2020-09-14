@@ -33,8 +33,8 @@ export default {
   },
   data: () => {
     return {
-      firstName: null,
-      lastName: null
+      firstName: DataService.firstName,
+      lastName: DataService.lastName
     };
   },
   methods: {
