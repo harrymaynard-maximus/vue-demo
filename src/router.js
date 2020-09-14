@@ -3,6 +3,7 @@ import ACL from './components/acl/ACL';
 import Enrolment from './components/enrolment/Enrolment';
 import EnrolmentHome from './components/enrolment/EnrolmentHome';
 import EnrolmentPersonalInfo from './components/enrolment/EnrolmentPersonalInfo';
+import EnrolmentReview from './components/enrolment/EnrolmentReview';
 
 const router = new VueRouter({
   mode: 'history',
@@ -24,6 +25,10 @@ const router = new VueRouter({
         {
           path: '/msp/enrolment/personal-info',
           component: EnrolmentPersonalInfo
+        },
+        {
+          path: '/msp/enrolment/review',
+          component: EnrolmentReview
         }
       ]
     }

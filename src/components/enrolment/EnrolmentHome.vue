@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     nextPage: function () {
-      this.$router.push('/msp/enrolment/personal-info')
+      this.$router.push('/msp/enrolment/personal-info');
     },
     handleSelect: function(event) {
       console.log('event: ', event);

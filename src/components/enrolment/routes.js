@@ -8,8 +8,8 @@ const routes = [
     title: 'Personal Info'
   },
   {
-    path: '/msp/enrolment/spouse-info',
-    title: 'Spouse Info'
+    path: '/msp/enrolment/review',
+    title: 'Review'
   }
 ]
 

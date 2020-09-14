@@ -1,4 +1,6 @@
 const dataService = {
+  firstName: null,
+  lastName: null,
   phn: ''
 };
 

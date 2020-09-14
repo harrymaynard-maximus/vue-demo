@@ -6,35 +6,43 @@
     <hr/>
     <Input
       v-bind:label="'First Name'"
-      v-bind:id="'textInputId'"
-      v-bind:placeholder="'Enter value'"
-      v-bind:styling="'bcgov-editable-white'"
-      v-bind:isRequired="true"
-      v-bind:value='firstName'
-      v-on:input-change='inputChange'
+      v-model="firstName"
     />
-    {{firstName}}
+
+    <Input
+      v-bind:label="'Last Name'"
+      v-model="lastName"
+    />
+
+    <Button label="Continue"
+            styling="bcgov-normal-blue btn"
+            v-on:button-click='nextPage' />
   </div>
 </template>
 
 <script>
-import Input from 'vue-shared-components/src/components/input/Input';
+import Button from 'vue-shared-components/src/components/button/Button';
+import Input from '../common/Input';
+import DataService from '../../services/data-service';
 
 export default {
   name: 'EnrolmentPersonalInfo',
   components: {
+    Button,
     Input
   },
   data: () => {
     return {
-      firstName: null
+      firstName: null,
+      lastName: null
     };
   },
   methods: {
-    nextPage: function () {},
-    inputChange: function() {
-      console.log("Input Changed: ", this.firstName);
-    }
+    nextPage: function () {
+      DataService.firstName = this.firstName;
+      DataService.lastName = this.lastName;
+      this.$router.push('/msp/enrolment/review');
+    },
   }
 }
 </script>
