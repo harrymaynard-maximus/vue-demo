@@ -12,7 +12,7 @@
             styling="bcgov-normal-blue btn"
             v-on:button-click='nextPage' />
             
-    <Modal v-if="isConcentModalOpen"
+    <ConsentModal v-if="isConcentModalOpen"
            v-on:accept="closeModal"
            :heading="'Information Collection Notice'"/>
   </div>
@@ -21,13 +21,13 @@
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
 import Radio from 'vue-shared-components/src/components/radio/Radio';
-import Modal from '../common/Modal';
+import ConsentModal from '../common/ConsentModal';
 
 export default {
   name: 'EnrolmentHome',
   components: {
     Button,
-    Modal,
+    ConsentModal,
     Radio
   },
   data: () => {
