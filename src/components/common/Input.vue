@@ -1,10 +1,10 @@
 <template>
-  <div class="form-group">
+  <div :class="styling">
     <label v-bind:for="'input' + label">{{label}}:</label><br/>
     <input v-bind:id="'input' + label"
            class='form-control'
            v-bind:value="value"
-           v-on:input="$emit('input', $event.target.value)" />
+           v-on:input="emitInput($event)" />
   </div>
 </template>
 
@@ -16,6 +16,12 @@ export default {
   props: {
     value: String,
     label: String,
+    styling: String,
+  },
+  methods: {
+    emitInput: function(event) {
+      this.$emit('input', event.target.value);
+    }
   }
 }
 </script>

@@ -6,13 +6,18 @@
     <hr/>
     <Input
       v-bind:label="'First Name'"
-      v-model="firstName"
+      v-model.trim.lazy="$v.firstName.$model"
     />
+    <div class="text-danger" v-if="$v.firstName.$dirty && !$v.firstName.required">Field is required</div>
+    <div class="text-danger" v-if="$v.firstName.$dirty && !$v.firstName.minLength">Name must have at least {{$v.firstName.$params.minLength.min}} letters.</div>
 
     <Input
       v-bind:label="'Last Name'"
-      v-model="lastName"
+      v-bind:styling="'pt-3'"
+      v-model="$v.lastName.$model"
     />
+    <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.required">Field is required</div>
+    <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.minLength">Name must have at least {{$v.lastName.$params.minLength.min}} letters.</div>
 
     <Button label="Continue"
             styling="bcgov-normal-blue btn"
@@ -24,6 +29,7 @@
 import Button from 'vue-shared-components/src/components/button/Button';
 import Input from '../common/Input';
 import DataService from '../../services/data-service';
+import { required, minLength } from 'vuelidate/lib/validators'
 
 export default {
   name: 'EnrolmentPersonalInfo',
@@ -37,8 +43,22 @@ export default {
       lastName: DataService.lastName
     };
   },
+  validations: {
+    firstName: {
+      required,
+      minLength: minLength(4)
+    },
+    lastName: {
+      required,
+      minLength: minLength(4)
+    }
+  },
   methods: {
     nextPage: function () {
+      this.$v.$touch()
+      if (this.$v.$invalid) {
+        return;
+      }
       DataService.firstName = this.firstName;
       DataService.lastName = this.lastName;
       this.$router.push('/msp/enrolment/review');

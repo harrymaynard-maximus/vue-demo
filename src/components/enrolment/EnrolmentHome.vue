@@ -13,8 +13,8 @@
             v-on:button-click='nextPage' />
             
     <ConsentModal v-if="isConcentModalOpen"
-           v-on:accept="closeModal"
-           :heading="'Information Collection Notice'"/>
+            v-on:accept="closeModal"
+            :heading="'Information Collection Notice'"/>
   </div>
 </template>
 
