@@ -24,8 +24,6 @@ export default {
   data: () => {
 
     return {
-      firstName: DataService.firstName,
-      lastName: DataService.lastName,
       tableData: [
         { name: 'First Name', value: DataService.firstName },
         { name: 'Last Name', value: DataService.lastName }
@@ -34,7 +32,7 @@ export default {
   },
   methods: {
     nextPage: function () {
-      //this.$router.push('/msp/enrolment/review');
+      this.$router.push('/msp/enrolment/sending');
     }
   }
 }

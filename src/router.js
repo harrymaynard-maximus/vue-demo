@@ -4,6 +4,8 @@ import Enrolment from './components/enrolment/Enrolment';
 import EnrolmentHome from './components/enrolment/EnrolmentHome';
 import EnrolmentPersonalInfo from './components/enrolment/EnrolmentPersonalInfo';
 import EnrolmentReview from './components/enrolment/EnrolmentReview';
+import EnrolmentSending from './components/enrolment/EnrolmentSending';
+import EnrolmentSubmission from './components/enrolment/EnrolmentSubmission';
 
 const router = new VueRouter({
   mode: 'history',
@@ -29,8 +31,16 @@ const router = new VueRouter({
         {
           path: '/msp/enrolment/review',
           component: EnrolmentReview
-        }
+        },
       ]
+    },
+    {
+      path: '/msp/enrolment/sending',
+      component: EnrolmentSending
+    },
+    {
+      path: '/msp/enrolment/submission',
+      component: EnrolmentSubmission
     }
   ]
 });

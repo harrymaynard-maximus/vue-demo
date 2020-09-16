@@ -13,14 +13,14 @@
 
     <Input
       v-bind:label="'Last Name'"
-      v-bind:styling="'pt-3'"
+      v-bind:styling="'mt-3'"
       v-model="$v.lastName.$model"
     />
     <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.required">Field is required</div>
     <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.minLength">Name must have at least {{$v.lastName.$params.minLength.min}} letters.</div>
 
     <Button label="Continue"
-            styling="bcgov-normal-blue btn"
+            styling="bcgov-normal-blue btn mt-3"
             v-on:button-click='nextPage' />
   </div>
 </template>
