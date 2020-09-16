@@ -13,7 +13,7 @@
             v-on:button-click='nextPage' />
             
     <ConsentModal v-if="isConcentModalOpen"
-            v-on:accept="closeModal"
+            v-on:accept="acceptConsentModal"
             :heading="'Information Collection Notice'"/>
   </div>
 </template>
@@ -22,6 +22,7 @@
 import Button from 'vue-shared-components/src/components/button/Button';
 import Radio from 'vue-shared-components/src/components/radio/Radio';
 import ConsentModal from '../common/ConsentModal';
+import DataService from '../../services/data-service';
 
 export default {
   name: 'EnrolmentHome',
@@ -42,7 +43,8 @@ export default {
     handleSelect: function(event) {
       console.log('event: ', event);
     },
-    closeModal: function() {
+    acceptConsentModal: function() {
+      DataService.hasAcceptedTerms = true;
       this.isConcentModalOpen = false;
     }
   }

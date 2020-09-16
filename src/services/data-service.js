@@ -1,7 +1,8 @@
 const dataService = {
   firstName: null,
   lastName: null,
-  phn: ''
+  phn: '',
+  hasAcceptedTerms: false,
 };
 
 export default dataService;

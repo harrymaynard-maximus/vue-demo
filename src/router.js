@@ -1,5 +1,6 @@
 import VueRouter from 'vue-router';
 import ACL from './components/acl/ACL';
+import DataService from './services/data-service';
 import Enrolment from './components/enrolment/Enrolment';
 import EnrolmentHome from './components/enrolment/EnrolmentHome';
 import EnrolmentPersonalInfo from './components/enrolment/EnrolmentPersonalInfo';
@@ -21,6 +22,7 @@ const router = new VueRouter({
       redirect: '/msp/enrolment/home',
       children: [
         {
+          name: 'EnrolmentHome',
           path: '/msp/enrolment/home',
           component: EnrolmentHome
         },
@@ -44,5 +46,13 @@ const router = new VueRouter({
     }
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'EnrolmentHome' && !DataService.hasAcceptedTerms) {
+    next({ name: 'EnrolmentHome' });
+  } else {
+    next();
+  }
+})
 
 export default router;
