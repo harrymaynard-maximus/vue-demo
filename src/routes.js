@@ -1,8 +1,8 @@
-import EnrolmentHome from './components/enrolment/EnrolmentHome';
-import EnrolmentPersonalInfo from './components/enrolment/EnrolmentPersonalInfo';
-import EnrolmentReview from './components/enrolment/EnrolmentReview';
-import EnrolmentSending from './components/enrolment/EnrolmentSending';
-import EnrolmentSubmission from './components/enrolment/EnrolmentSubmission';
+import EnrolmentHome from './modules/enrolment/components/EnrolmentHome';
+import EnrolmentPersonalInfo from './modules/enrolment/components/EnrolmentPersonalInfo';
+import EnrolmentReview from './modules/enrolment/components/EnrolmentReview';
+import EnrolmentSending from './modules/enrolment/components/EnrolmentSending';
+import EnrolmentSubmission from './modules/enrolment/components/EnrolmentSubmission';
 
 export default {
   ENROLMENT_HOME: {

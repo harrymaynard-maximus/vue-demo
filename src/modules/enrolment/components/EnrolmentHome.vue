@@ -21,10 +21,10 @@
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
 import Radio from 'vue-shared-components/src/components/radio/Radio';
-import ConsentModal from '../common/ConsentModal';
-import DataService from '../../services/data-service';
-import pageStateService from '../../services/page-state-service';
-import routes from '../../routes';
+import ConsentModal from '../../common/components/ConsentModal';
+import DataService from '../../../services/data-service';
+import pageStateService from '../../../services/page-state-service';
+import routes from '../../../routes';
 
 export default {
   name: 'EnrolmentHome',

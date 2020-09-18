@@ -12,8 +12,8 @@
 <script>
 import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
-import ProgressBar from '../common/ProgressBar';
-import routes from './step-routes';
+import ProgressBar from '../../common/components/ProgressBar';
+import routes from '../step-routes';
 
 export default {
   name: 'Enrolment',

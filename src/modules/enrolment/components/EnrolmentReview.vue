@@ -12,10 +12,10 @@
 
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
-import Table from '../common/Table';
-import DataService from '../../services/data-service';
-import routes from '../../routes';
-import pageStateService from '../../services/page-state-service';
+import Table from '../../common/components/Table';
+import DataService from '../../../services/data-service';
+import routes from '../../../routes';
+import pageStateService from '../../../services/page-state-service';
 
 export default {
   name: 'EnrolmentReview',

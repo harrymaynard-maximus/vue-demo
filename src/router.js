@@ -1,7 +1,7 @@
 import VueRouter from 'vue-router';
-import ACL from './components/acl/ACL';
+import ACL from './modules/acl/components/ACL';
 import DataService from './services/data-service';
-import Enrolment from './components/enrolment/Enrolment';
+import Enrolment from './modules/enrolment/components/Enrolment';
 import routes from './routes';
 import pageStateService from './services/page-state-service';
 

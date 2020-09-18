@@ -16,7 +16,6 @@ class PageStateService {
     const page = this.pages.find((page) => {
       return page.path === path;
     });
-    console.log(path, this.pages);
     page.isComplete = false;
   }
 

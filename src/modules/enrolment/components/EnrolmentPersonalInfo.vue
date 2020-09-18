@@ -27,11 +27,11 @@
 
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
-import Input from '../common/Input';
-import DataService from '../../services/data-service';
+import Input from '../../common/components/Input';
+import DataService from '../../../services/data-service';
 import { required, minLength } from 'vuelidate/lib/validators';
-import pageStateService from '../../services/page-state-service';
-import routes from '../../routes';
+import pageStateService from '../../../services/page-state-service';
+import routes from '../../../routes';
 
 export default {
   name: 'EnrolmentPersonalInfo',
