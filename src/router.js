@@ -2,12 +2,8 @@ import VueRouter from 'vue-router';
 import ACL from './components/acl/ACL';
 import DataService from './services/data-service';
 import Enrolment from './components/enrolment/Enrolment';
-import EnrolmentHome from './components/enrolment/EnrolmentHome';
-import EnrolmentPersonalInfo from './components/enrolment/EnrolmentPersonalInfo';
-import EnrolmentReview from './components/enrolment/EnrolmentReview';
-import EnrolmentSending from './components/enrolment/EnrolmentSending';
-import EnrolmentSubmission from './components/enrolment/EnrolmentSubmission';
-
+import routes from './routes';
+import pageStateService from './services/page-state-service';
 const router = new VueRouter({
   mode: 'history',
   routes: [
@@ -21,35 +17,20 @@ const router = new VueRouter({
       component: Enrolment,
       redirect: '/msp/enrolment/home',
       children: [
-        {
-          name: 'EnrolmentHome',
-          path: '/msp/enrolment/home',
-          component: EnrolmentHome
-        },
-        {
-          path: '/msp/enrolment/personal-info',
-          component: EnrolmentPersonalInfo
-        },
-        {
-          path: '/msp/enrolment/review',
-          component: EnrolmentReview
-        },
+        {...routes.ENROLMENT_HOME},
+        {...routes.ENROLMENT_PERSONAL_INFO},
+        {...routes.ENROLMENT_REVIEW},
       ]
     },
-    {
-      path: '/msp/enrolment/sending',
-      component: EnrolmentSending
-    },
-    {
-      path: '/msp/enrolment/submission',
-      component: EnrolmentSubmission
-    }
+    {...routes.ENROLMENT_SENDING},
+    {...routes.ENROLMENT_SUBMISSION},
   ]
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'EnrolmentHome' && !DataService.hasAcceptedTerms) {
-    next({ name: 'EnrolmentHome' });
+  if ( (to.name !== routes.ENROLMENT_HOME.name && !DataService.hasAcceptedTerms)
+    || (to.name !== routes.ENROLMENT_HOME.name && !pageStateService.isPageComplete(to.path))) {
+    next({ name: routes.ENROLMENT_HOME.name });
   } else {
     next();
   }

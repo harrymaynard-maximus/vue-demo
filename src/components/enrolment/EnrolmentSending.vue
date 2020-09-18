@@ -14,6 +14,8 @@
 <script>
 import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
+import routes from '../../routes';
+import pageStateService from '../../services/page-state-service';
 
 export default {
   name: 'EnrolmentSending',
@@ -33,7 +35,10 @@ export default {
   },
   methods: {
     nextPage: function() {
-      this.$router.push('/msp/enrolment/submission');
+      pageStateService.setPageIncomplete(routes.ENROLMENT_SENDING.path);
+      const path = routes.ENROLMENT_SUBMISSION.path;
+      pageStateService.setPageComplete(path);
+      this.$router.push(path);
     },
   }
 }

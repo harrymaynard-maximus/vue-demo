@@ -1,19 +1,19 @@
 <template>
-  <div>
+  <main>
     <Header name="Enrolment" :history="history" />
     <ProgressBar :routes='routes' :currentPath='$route.path' />
     <div class="container py-5">
       <router-view></router-view>
     </div>
     <Footer />
-  </div>
+  </main>
 </template>
 
 <script>
 import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
 import ProgressBar from '../common/ProgressBar';
-import routes from './routes';
+import routes from './step-routes';
 
 export default {
   name: 'Enrolment',
@@ -38,4 +38,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+main {
+  padding: 0;
+}
 </style>

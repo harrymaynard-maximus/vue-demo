@@ -29,7 +29,9 @@
 import Button from 'vue-shared-components/src/components/button/Button';
 import Input from '../common/Input';
 import DataService from '../../services/data-service';
-import { required, minLength } from 'vuelidate/lib/validators'
+import { required, minLength } from 'vuelidate/lib/validators';
+import pageStateService from '../../services/page-state-service';
+import routes from '../../routes';
 
 export default {
   name: 'EnrolmentPersonalInfo',
@@ -61,7 +63,11 @@ export default {
       }
       DataService.firstName = this.firstName;
       DataService.lastName = this.lastName;
-      this.$router.push('/msp/enrolment/review');
+
+      pageStateService.setPageIncomplete(routes.ENROLMENT_PERSONAL_INFO.path);
+      const path = routes.ENROLMENT_REVIEW.path;
+      pageStateService.setPageComplete(path);
+      this.$router.push(path);
     },
   }
 }

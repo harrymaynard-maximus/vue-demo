@@ -23,6 +23,8 @@ import Button from 'vue-shared-components/src/components/button/Button';
 import Radio from 'vue-shared-components/src/components/radio/Radio';
 import ConsentModal from '../common/ConsentModal';
 import DataService from '../../services/data-service';
+import pageStateService from '../../services/page-state-service';
+import routes from '../../routes';
 
 export default {
   name: 'EnrolmentHome',
@@ -36,9 +38,14 @@ export default {
       isConcentModalOpen: true
     };
   },
+  created: function() {
+    pageStateService.setPageComplete(routes.ENROLMENT_HOME.path);
+  },
   methods: {
     nextPage: function () {
-      this.$router.push('/msp/enrolment/personal-info');
+      const path = routes.ENROLMENT_PERSONAL_INFO.path;
+      pageStateService.setPageComplete(path);
+      this.$router.push(path);
     },
     handleSelect: function(event) {
       console.log('event: ', event);

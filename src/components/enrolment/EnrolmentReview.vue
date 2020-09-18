@@ -14,6 +14,8 @@
 import Button from 'vue-shared-components/src/components/button/Button';
 import Table from '../common/Table';
 import DataService from '../../services/data-service';
+import routes from '../../routes';
+import pageStateService from '../../services/page-state-service';
 
 export default {
   name: 'EnrolmentReview',
@@ -32,7 +34,10 @@ export default {
   },
   methods: {
     nextPage: function () {
-      this.$router.push('/msp/enrolment/sending');
+      pageStateService.setPageIncomplete(routes.ENROLMENT_REVIEW.path);
+      const path = routes.ENROLMENT_SENDING.path;
+      pageStateService.setPageComplete(path);
+      this.$router.push(path);
     }
   }
 }

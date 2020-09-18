@@ -1,10 +1,10 @@
 <template>
   <div class="">
-    <div class="modal fade show" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade show" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">{{heading}}</h5>
+            <h2 class="modal-title" id="exampleModalLabel">{{heading}}</h2>
           </div>
           <div class="modal-body">
             <p><strong>Keep your personal information secure – especially when using a shared device like a computer at a library, school or café.</strong> To delete any information that was entered, either complete the request and submit it or, if you don't finish, close the web browser.</p>
