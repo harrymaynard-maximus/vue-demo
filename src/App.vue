@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import pageStateService from './services/page-state-service';
+import pageStateService from './modules/common/services/page-state-service';
 
 export default {
   name: 'App',

@@ -1,4 +1,5 @@
-import routes from '../routes';
+import routes from '../../../routes';
+// import environment from '../../../environments/environment';
 
 class PageStateService {
   constructor() {

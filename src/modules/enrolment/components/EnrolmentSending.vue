@@ -15,7 +15,7 @@
 import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
 import routes from '../../../routes';
-import pageStateService from '../../../services/page-state-service';
+import pageStateService from '../../common/services/page-state-service';
 
 export default {
   name: 'EnrolmentSending',
