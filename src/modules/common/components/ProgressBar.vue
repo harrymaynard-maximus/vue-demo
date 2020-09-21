@@ -4,14 +4,21 @@
       <div class='progress-bar' :style='progressBarStyles'></div>
     </div>
     <div class='step-container'>
-      <div v-for='route in routes' :key='route.path' class="step">
-        <div class='step-text'>{{route.title}}</div>
-      </div>
+      <a href="javascript: void 0;"
+          v-for='route in routes'
+          :key='route.path'
+          @click="onClickLink(route.path)">
+        <div class="step">
+          <div class='step-text'>{{route.title}}</div>
+        </div>
+      </a>
     </div>
   </div>
 </template>
 
 <script>
+import environment from '../../../environments/environment';
+
 export default {
   name: 'ProgressBar',
   components: {},
@@ -26,6 +33,13 @@ export default {
       })
       return {
         width: (100 / this.routes.length * index) + (100 / this.routes.length / 2) + '%'
+      }
+    }
+  },
+  methods: {
+    onClickLink: function(path) {
+      if (environment.bypassRouteGuards) {
+        this.$router.push(path);
       }
     }
   }

@@ -12,7 +12,7 @@
             styling="bcgov-normal-blue btn"
             v-on:button-click='nextPage' />
             
-    <ConsentModal v-if="isConcentModalOpen"
+    <ConsentModal v-if="!hasAcceptedTerms"
             v-on:accept="acceptConsentModal"
             :heading="'Information Collection Notice'"/>
   </div>
@@ -35,7 +35,7 @@ export default {
   },
   data: () => {
     return {
-      isConcentModalOpen: true
+      hasAcceptedTerms: DataService.hasAcceptedTerms
     };
   },
   created: function() {
@@ -43,6 +43,7 @@ export default {
   },
   methods: {
     nextPage: function () {
+      DataService.hasAcceptedTerms = true;
       const path = routes.ENROLMENT_PERSONAL_INFO.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
@@ -52,7 +53,7 @@ export default {
     },
     acceptConsentModal: function() {
       DataService.hasAcceptedTerms = true;
-      this.isConcentModalOpen = false;
+      this.hasAcceptedTerms = true;
     }
   }
 }
