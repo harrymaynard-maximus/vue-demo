@@ -1,5 +1,5 @@
 import routes from '../../../routes';
-// import environment from '../../../environments/environment';
+import environment from '../../../environments/environment';
 
 class PageStateService {
   constructor() {
@@ -33,7 +33,7 @@ class PageStateService {
       return page.path === path;
     });
 
-    return page && !!page.isComplete;
+    return (page && !!page.isComplete) || environment.bypassRouteGuards;
   }
 }
 

@@ -29,8 +29,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if ( (to.name !== routes.ENROLMENT_HOME.name && !DataService.hasAcceptedTerms)
-    || (to.name !== routes.ENROLMENT_HOME.name && !pageStateService.isPageComplete(to.path))) {
+  if (to.name !== routes.ENROLMENT_HOME.name && !pageStateService.isPageComplete(to.path)) {
     next({ name: routes.ENROLMENT_HOME.name });
     DataService.reset();
   } else {
