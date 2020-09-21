@@ -6,11 +6,11 @@
     <p><label>Do you currently live in British Columbia (i.e. Do you have an address here)?</label></p>
 
     <div class="form-group">
-      <input type="radio" id="no" value="N" v-model="livesInBC">
-      <label for="one">&nbsp; No</label>
+      <input type="radio" id="no" value="N" v-model="livesInBC" />&nbsp;
+      <label for="no">No</label>
       <br>
-      <input type="radio" id="yes" value="Y" v-model="livesInBC">
-      <label for="two">&nbsp; Yes</label>
+      <input type="radio" id="yes" value="Y" v-model="livesInBC" />&nbsp;
+      <label for="yes">Yes</label>
     </div>
 
     <Button label="Continue"

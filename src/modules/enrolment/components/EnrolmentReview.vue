@@ -1,8 +1,13 @@
 <template>
   <div>
     <h1>Review Application</h1>
-    
-    <Table :elements='tableData' />
+    <hr/>
+
+    <h2>Personal Information</h2>
+    <Table :elements='personalData' />
+
+    <h2 class="mt-5">Other Information</h2>
+    <Table :elements='otherData' />
 
     <Button label="Submit"
             styling="bcgov-normal-blue btn"
@@ -26,9 +31,11 @@ export default {
   data: () => {
 
     return {
-      tableData: [
+      personalData: [
         { name: 'First Name', value: DataService.firstName },
-        { name: 'Last Name', value: DataService.lastName },
+        { name: 'Last Name', value: DataService.lastName }
+      ],
+      otherData: [
         { name: 'Lives in BC', value: DataService.livesInBC }
       ]
     };
