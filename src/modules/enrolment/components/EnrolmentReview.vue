@@ -28,7 +28,8 @@ export default {
     return {
       tableData: [
         { name: 'First Name', value: DataService.firstName },
-        { name: 'Last Name', value: DataService.lastName }
+        { name: 'Last Name', value: DataService.lastName },
+        { name: 'Lives in BC', value: DataService.livesInBC }
       ]
     };
   },

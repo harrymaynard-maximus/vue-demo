@@ -5,8 +5,13 @@
     <hr/>
     <p><label>Do you currently live in British Columbia (i.e. Do you have an address here)?</label></p>
 
-    <Radio id="radio1" name="radio" label="No" v-on:radio-select="handleSelect($event)" />
-    <Radio id="radio2" name="radio" label="Yes" v-on:radio-select="handleSelect($event)" />
+    <div class="form-group">
+      <input type="radio" id="no" value="N" v-model="livesInBC">
+      <label for="one">&nbsp; No</label>
+      <br>
+      <input type="radio" id="yes" value="Y" v-model="livesInBC">
+      <label for="two">&nbsp; Yes</label>
+    </div>
 
     <Button label="Continue"
             styling="bcgov-normal-blue btn"
@@ -20,7 +25,6 @@
 
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
-import Radio from 'vue-shared-components/src/components/radio/Radio';
 import ConsentModal from '../../common/components/ConsentModal';
 import DataService from '../../../services/data-service';
 import pageStateService from '../../common/services/page-state-service';
@@ -30,12 +34,12 @@ export default {
   name: 'EnrolmentHome',
   components: {
     Button,
-    ConsentModal,
-    Radio
+    ConsentModal
   },
   data: () => {
     return {
-      hasAcceptedTerms: DataService.hasAcceptedTerms
+      hasAcceptedTerms: DataService.hasAcceptedTerms,
+      livesInBC: DataService.livesInBC,
     };
   },
   created: function() {
@@ -44,6 +48,8 @@ export default {
   methods: {
     nextPage: function () {
       DataService.hasAcceptedTerms = true;
+      DataService.livesInBC = this.livesInBC;
+
       const path = routes.ENROLMENT_PERSONAL_INFO.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
