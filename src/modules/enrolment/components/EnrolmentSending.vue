@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <main>
     <Header name="Enrolment" :history="history" />
     <div class="container py-5">
       <h1 class="text-center">Sending Application</h1>
@@ -8,7 +8,7 @@
       </div>
     </div>
     <Footer />
-  </div>
+  </main>
 </template>
 
 <script>
@@ -46,4 +46,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+main {
+  padding: 0;
+}
 </style>

@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <main>
     <Header name="Enrolment" :history="history" />
     <div class="container py-5">
       <h1>Submission successful.</h1>
       <p>Reference number: 12345</p>
     </div>
     <Footer />
-  </div>
+  </main>
 </template>
 
 <script>
@@ -29,4 +29,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+main {
+  padding: 0;
+}
 </style>

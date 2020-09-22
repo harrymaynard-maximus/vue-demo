@@ -4,14 +4,15 @@ import EnrolmentReview from './modules/enrolment/components/EnrolmentReview.vue'
 import EnrolmentSending from './modules/enrolment/components/EnrolmentSending.vue';
 import EnrolmentSubmission from './modules/enrolment/components/EnrolmentSubmission.vue';
 
-interface Route {
+export interface Route {
   path: string;
   title: string;
   name: string;
   component: any;
+  isComplete?: boolean;
 }
 
-const routes: { [key: string]: Route } = {
+export const routes: { [key: string]: Route } = {
   ENROLMENT_HOME: {
     path: '/msp/enrolment/home',
     title: 'Check Eligibility',

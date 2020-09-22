@@ -1,8 +1,9 @@
-import routes from '../../../routes';
+import { routes, Route } from '../../../routes';
 import environment from '../../../environments/environment';
 
 class PageStateService {
-  private pages: Array<any> = [];
+  private pages: Array<Route> = [];
+
   constructor() {
     this.pages = [];
     console.log('Init PageStateService.');
@@ -18,22 +19,24 @@ class PageStateService {
     const page = this.pages.find((page) => {
       return page.path === path;
     });
-    page.isComplete = false;
+    if (page) {
+      page.isComplete = false;
+    }
   }
 
   setPageComplete(path: string) {
     const page = this.pages.find((page) => {
       return page.path === path;
     });
-    console.log(path, this.pages);
-    page.isComplete = true;
+    if (page) {
+      page.isComplete = true;
+    }
   }
 
   isPageComplete(path: string) {
     const page = this.pages.find((page) => {
       return page.path === path;
     });
-
     return (page && !!page.isComplete) || environment.bypassRouteGuards;
   }
 }
