@@ -1,10 +1,17 @@
-import EnrolmentHome from './modules/enrolment/components/EnrolmentHome';
-import EnrolmentPersonalInfo from './modules/enrolment/components/EnrolmentPersonalInfo';
-import EnrolmentReview from './modules/enrolment/components/EnrolmentReview';
-import EnrolmentSending from './modules/enrolment/components/EnrolmentSending';
-import EnrolmentSubmission from './modules/enrolment/components/EnrolmentSubmission';
+import EnrolmentHome from './modules/enrolment/components/EnrolmentHome.vue';
+import EnrolmentPersonalInfo from './modules/enrolment/components/EnrolmentPersonalInfo.vue';
+import EnrolmentReview from './modules/enrolment/components/EnrolmentReview.vue';
+import EnrolmentSending from './modules/enrolment/components/EnrolmentSending.vue';
+import EnrolmentSubmission from './modules/enrolment/components/EnrolmentSubmission.vue';
 
-export default {
+interface Route {
+  path: string;
+  title: string;
+  name: string;
+  component: any;
+}
+
+const routes: { [key: string]: Route } = {
   ENROLMENT_HOME: {
     path: '/msp/enrolment/home',
     title: 'Check Eligibility',
@@ -36,3 +43,4 @@ export default {
     component: EnrolmentSubmission
   }
 }
+export default routes;

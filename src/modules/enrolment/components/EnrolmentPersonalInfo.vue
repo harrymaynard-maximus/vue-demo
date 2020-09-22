@@ -28,7 +28,7 @@
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
 import Input from '../../common/components/Input';
-import DataService from '../../../services/data-service';
+import DataService from '../../../services/data-service.ts';
 import { required, minLength } from 'vuelidate/lib/validators';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
