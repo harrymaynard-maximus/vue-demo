@@ -11,6 +11,7 @@
       <br>
       <input type="radio" id="yes" value="Y" v-model="livesInBC" />&nbsp;
       <label for="yes">Yes</label>
+      <div class="text-danger" v-if="$v.livesInBC.$dirty && !$v.livesInBC.required">Field is required</div>
     </div>
 
     <Button label="Continue"
@@ -29,6 +30,7 @@ import ConsentModal from '../../common/components/ConsentModal';
 import DataService from '../../../services/data-service';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
+import { required } from 'vuelidate/lib/validators';
 
 export default {
   name: 'EnrolmentHome',
@@ -42,11 +44,20 @@ export default {
       livesInBC: DataService.livesInBC,
     };
   },
+  validations: {
+    livesInBC: {
+      required,
+    }
+  },
   created: function() {
     pageStateService.setPageComplete(routes.ENROLMENT_HOME.path);
   },
   methods: {
     nextPage: function () {
+      this.$v.$touch()
+      if (this.$v.$invalid) {
+        return;
+      }
       DataService.hasAcceptedTerms = true;
       DataService.livesInBC = this.livesInBC;
 
