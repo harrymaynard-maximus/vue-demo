@@ -4,7 +4,7 @@
       <VueSignaturePad width="500px"
                       height="200px"
                       ref="signaturePad"
-                      :options="{ onBegin, onEnd }" />
+                      :options="{ onEnd }" />
     </div>
     <br/>
     <Button label="Clear"
@@ -35,13 +35,12 @@ export default {
     clear() {
       this.$refs.signaturePad.clearSignature();
       this.containsSignature = false;
-    },
-    onBegin() {
-      console.log("Begin---");
+      this.$emit('input', null);
     },
     onEnd() {
       this.containsSignature = true;
-      console.log("End---")
+      const { data } = this.$refs.signaturePad.saveSignature();
+      this.$emit('input', data);
     }
   }
 }

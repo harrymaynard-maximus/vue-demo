@@ -11,8 +11,11 @@
 
     <h2 class="mt-5">Signature</h2>
     <div class="form-group">
-      <SignaturePad />
+      <SignaturePad v-model="signature" />
     </div>
+    <img :src="signature" />
+    <br/>
+    <div class="text-danger" v-if="$v.signature.$dirty && !$v.signature.required">Signature is required</div>
 
     <Button label="Submit"
             styling="bcgov-normal-blue btn"
@@ -27,6 +30,7 @@ import Table from '../../common/components/Table';
 import DataService from '../../../services/data-service.ts';
 import routes from '../../../routes';
 import pageStateService from '../../common/services/page-state-service';
+import { required } from 'vuelidate/lib/validators';
 
 export default {
   name: 'EnrolmentReview',
@@ -36,7 +40,6 @@ export default {
     Table
   },
   data: () => {
-
     return {
       personalData: [
         { name: 'First Name', value: DataService.firstName },
@@ -44,11 +47,21 @@ export default {
       ],
       otherData: [
         { name: 'Lives in BC', value: DataService.livesInBC }
-      ]
+      ],
+      signature: null
     };
+  },
+  validations: {
+    signature: {
+      required
+    },
   },
   methods: {
     nextPage: function () {
+      this.$v.$touch()
+      if (this.$v.$invalid) {
+        return;
+      }
       pageStateService.setPageIncomplete(routes.ENROLMENT_REVIEW.path);
       const path = routes.ENROLMENT_SENDING.path;
       pageStateService.setPageComplete(path);
