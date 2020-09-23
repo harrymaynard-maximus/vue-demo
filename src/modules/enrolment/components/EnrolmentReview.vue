@@ -9,6 +9,11 @@
     <h2 class="mt-5">Other Information</h2>
     <Table :elements='otherData' />
 
+    <h2 class="mt-5">Signature</h2>
+    <div class="form-group">
+      <SignaturePad />
+    </div>
+
     <Button label="Submit"
             styling="bcgov-normal-blue btn"
             v-on:button-click='nextPage' />
@@ -17,6 +22,7 @@
 
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
+import SignaturePad from '../../common/components/SignaturePad';
 import Table from '../../common/components/Table';
 import DataService from '../../../services/data-service.ts';
 import routes from '../../../routes';
@@ -26,6 +32,7 @@ export default {
   name: 'EnrolmentReview',
   components: {
     Button,
+    SignaturePad,
     Table
   },
   data: () => {

@@ -14,6 +14,7 @@
     "vue-property-decorator": "^8.4.2",
     "vue-router": "^3.4.3",
     "vue-shared-components": "github:bcgov/vue-shared-components",
+    "vue-signature-pad": "^2.0.2",
     "vuelidate": "^0.7.5"
   },
   "devDependencies": {
