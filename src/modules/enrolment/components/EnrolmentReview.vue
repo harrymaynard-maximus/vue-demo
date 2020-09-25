@@ -62,6 +62,8 @@ export default {
       if (this.$v.$invalid) {
         return;
       }
+      DataService.signature = this.signature;
+      
       pageStateService.setPageIncomplete(routes.ENROLMENT_REVIEW.path);
       const path = routes.ENROLMENT_SENDING.path;
       pageStateService.setPageComplete(path);

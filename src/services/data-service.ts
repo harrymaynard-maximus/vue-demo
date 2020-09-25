@@ -4,6 +4,7 @@ class DataService {
   phn: string = '';
   hasAcceptedTerms: boolean = false;
   livesInBC: string = '';
+  signature: string = '';
 
   reset() {
     this.firstName = '';
@@ -11,6 +12,7 @@ class DataService {
     this.phn = '';
     this.hasAcceptedTerms = false;
     this.livesInBC = '';
+    this.signature = '';
   }
 }
 

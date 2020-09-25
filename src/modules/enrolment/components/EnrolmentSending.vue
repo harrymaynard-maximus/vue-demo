@@ -16,6 +16,7 @@ import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
 import routes from '../../../routes';
 import pageStateService from '../../common/services/page-state-service';
+import axios from 'axios';
 
 export default {
   name: 'EnrolmentSending',
@@ -29,9 +30,12 @@ export default {
     };
   },
   created: function() {
-    setTimeout(() => {
+    axios.get('https://api.ipify.org?format=json').then((response) => {
+      console.log(response);
       this.nextPage();
-    }, 5000);
+    }).catch((error) => {
+      console.log(error);
+    });
   },
   methods: {
     nextPage: function() {
