@@ -38,6 +38,11 @@ const router = new VueRouter({
       path: routes.ENROLMENT_SUBMISSION.path,
       name: routes.ENROLMENT_SUBMISSION.name,
       component: routes.ENROLMENT_SUBMISSION.component
+    },
+    {
+      path: routes.ENROLMENT_SUBMISSION_ERROR.path,
+      name: routes.ENROLMENT_SUBMISSION_ERROR.name,
+      component: routes.ENROLMENT_SUBMISSION_ERROR.component
     }
   ]
 });

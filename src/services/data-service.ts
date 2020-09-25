@@ -6,6 +6,9 @@ class DataService {
   livesInBC: string = '';
   signature: string = '';
 
+  apiResponse: any;
+  apiError: any;
+
   reset() {
     this.firstName = '';
     this.lastName = '';
@@ -13,6 +16,9 @@ class DataService {
     this.hasAcceptedTerms = false;
     this.livesInBC = '';
     this.signature = '';
+
+    this.apiResponse = null;
+    this.apiError = null;
   }
 }
 

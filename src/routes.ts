@@ -3,6 +3,7 @@ import EnrolmentPersonalInfo from './modules/enrolment/components/EnrolmentPerso
 import EnrolmentReview from './modules/enrolment/components/EnrolmentReview.vue';
 import EnrolmentSending from './modules/enrolment/components/EnrolmentSending.vue';
 import EnrolmentSubmission from './modules/enrolment/components/EnrolmentSubmission.vue';
+import EnrolmentSubmissionError from './modules/enrolment/components/EnrolmentSubmissionError.vue';
 
 export interface Route {
   path: string;
@@ -42,6 +43,12 @@ export const routes: { [key: string]: Route } = {
     title: 'Submission',
     name: 'EnrolmentSubmission',
     component: EnrolmentSubmission
+  },
+  ENROLMENT_SUBMISSION_ERROR: {
+    path: '/msp/enrolment/submission-error',
+    title: 'Submission Error',
+    name: 'EnrolmentSubmissionError',
+    component: EnrolmentSubmissionError
   }
 }
 export default routes;

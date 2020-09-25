@@ -2,9 +2,8 @@
   <main>
     <Header name="Enrolment" :history="history" />
     <div class="container py-5">
-      <h1>Submission successful.</h1>
-      <p>Reference number: 12345</p>
-      <p>IP address: {{ipAddress}}</p>
+      <h1>Submission Error.</h1>
+      <p>See console for details.</p>
     </div>
     <Footer />
   </main>
@@ -24,9 +23,11 @@ export default {
   data: () => {
     return {
       history: {},
-      ipAddress: DataService.apiResponse ? DataService.apiResponse.data.ip : '',
     };
   },
+  created: () => {
+    console.log('Error: ', DataService.apiError);
+  }
 }
 </script>
 

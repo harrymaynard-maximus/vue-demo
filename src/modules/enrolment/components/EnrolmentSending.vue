@@ -16,6 +16,7 @@ import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
 import routes from '../../../routes';
 import pageStateService from '../../common/services/page-state-service';
+import DataService from '../../../services/data-service'
 import axios from 'axios';
 
 export default {
@@ -30,11 +31,13 @@ export default {
     };
   },
   created: function() {
+    // Error URL: https://run.mocky.io/v3/379961d9-61a0-4b9e-a3d7-a32b00937f8f
     axios.get('https://api.ipify.org?format=json').then((response) => {
-      console.log(response);
+      DataService.apiResponse = response;
       this.nextPage();
     }).catch((error) => {
-      console.log(error);
+      DataService.apiError = error;
+      this.navigateToErrorPage();
     });
   },
   methods: {
@@ -44,6 +47,12 @@ export default {
       pageStateService.setPageComplete(path);
       this.$router.push(path);
     },
+    navigateToErrorPage: function() {
+      pageStateService.setPageIncomplete(routes.ENROLMENT_SENDING.path);
+      const path = routes.ENROLMENT_SUBMISSION_ERROR.path;
+      pageStateService.setPageComplete(path);
+      this.$router.push(path);
+    }
   }
 }
 </script>
