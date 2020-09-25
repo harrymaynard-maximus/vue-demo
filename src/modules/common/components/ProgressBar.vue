@@ -53,7 +53,7 @@ export default {
   flex: 1;
   padding: 1em 2em;
   min-height: 2em;
-  min-width: 650px;
+  /* min-width: 650px; */
 }
 .progress-bar-container {
   background-color: #adb5bd;
