@@ -13,7 +13,7 @@
     <div class="form-group">
       <SignaturePad v-model="signature" />
     </div>
-    <img :src="signature" />
+    <img :src="signature" alt="Signature" />
     <br/>
     <div class="text-danger" v-if="$v.signature.$dirty && !$v.signature.required">Signature is required</div>
 
@@ -63,7 +63,7 @@ export default {
         return;
       }
       DataService.signature = this.signature;
-      
+
       pageStateService.setPageIncomplete(routes.ENROLMENT_REVIEW.path);
       const path = routes.ENROLMENT_SENDING.path;
       pageStateService.setPageComplete(path);
