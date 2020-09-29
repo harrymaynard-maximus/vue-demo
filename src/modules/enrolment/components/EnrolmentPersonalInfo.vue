@@ -19,6 +19,10 @@
     <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.required">Field is required</div>
     <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.minLength">Name must have at least {{$v.lastName.$params.minLength.min}} letters.</div>
 
+    <div class="mt-3">
+      <FileUploader />
+    </div>
+
     <Button label="Continue"
             styling="bcgov-normal-blue btn mt-3"
             v-on:button-click='nextPage' />
@@ -28,6 +32,7 @@
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
 import Input from '../../common/components/Input';
+import FileUploader from '../../common/components/FileUploader.vue';
 import DataService from '../../../services/data-service.ts';
 import { required, minLength } from 'vuelidate/lib/validators';
 import pageStateService from '../../common/services/page-state-service';
@@ -37,6 +42,7 @@ export default {
   name: 'EnrolmentPersonalInfo',
   components: {
     Button,
+    FileUploader,
     Input
   },
   data: () => {

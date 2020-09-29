@@ -1,6 +1,53 @@
+<template>
+  <div>
+    <div class="dropzone" ref="dropZone">
+
+    <div class="instruction-zone d-flex align-items-center flex-wrap flex-sm-nowrap flex-column flex-sm-row">
+      <i class="fa fa-cloud-upload fa-4x d-inline-block upload-icon" aria-hidden="true" ref="imagePlaceholderRef" tabindex="0"></i>
+
+      <input type="file" :id="id"
+              ref="browseFileRef" ngModel accept="image/*,application/pdf" style="display:none;"
+              tabindex="0" multiple :name='id'
+              :required='required'
+              autocomplete="off"/>
+      <label :for="id" class="file-upload-label d-inline-block ml-3" ref="selectFileLabel" tabindex="0">
+        <span class='h2 color-body'>Select a file</span>
+        <span class='d-block description'>{{ instructionText }}</span>
+      </label>
+
+    </div>
+
+    <div role="alert" class='error-container' aria-live="assertive">
+      Upload required.
+    </div>
+
+    <div class="preview-zone">
+      <div v-for="mspImage of images" :key="mspImage.uuid" class="preview-item">
+        <Thumbnail :imageObject="mspImage" />
+      </div>
+
+        <div class="common-thumbnail" @click='openFileDialog()'>
+          <div class="thumbnail-container">
+            <div class="image-thumbnail demo-thumbnail">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+            <div class="action-strip text-primary">
+              Add
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- This hidden canvas is used to transform / resize images -->
+    <canvas ref="canvas" style="display:none;"></canvas>
+  </div>
+</template>
+
+<script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-// var PDFJSStatic = require('pdfjs-dist')
+import Thumbnail from '../../common/components/Thumbnail.vue';
 import { Observable ,  Observer, fromEvent, merge } from 'rxjs';
 import {map, filter, flatMap, scan, delay, retryWhen} from 'rxjs/operators';
 import { CommonImage, CommonImageError, CommonImageProcessingError,
@@ -8,15 +55,7 @@ CommonImageScaleFactors, CommonImageScaleFactorsImpl } from '../models/images';
 
 var loadImage = require('blueimp-load-image');
 var sha1 = require('sha1');
-
-//import { PDFJSStatic } from 'pdfjs-dist'; 
 const PDFJS = require('pdfjs-dist/build/pdf');
-// import * as PDFJS_ from 'pdfjs-dist';
-// const PDFJS: PDFJSStatic = (PDFJS_ as any);
-
-// const pdfjs = import('pdfjs-dist/build/pdf');
-// const pdfjsWorker = import('pdfjs-dist/build/pdf.worker.entry');
-//import { pdfJsWorker } from 'pdfjs-dist/build/pdf.worker.entry.js';
 var pdfJsWorker = require('pdfjs-dist/build/pdf.worker.entry');
 PDFJS.workerSrc = pdfJsWorker;
 
@@ -24,19 +63,13 @@ export interface FileUploaderMsg {
   required: string;
 }
 
-// TODO - Remove this and fix tslint issues
-/* tslint:disable:max-line-length*/
-
 @Component({
-  template: `<div>Test</div>`,
+  components: {
+    Thumbnail
+  }
 })
-export class FileUploaderComponent extends Vue {
+export default class FileUploaderComponent extends Vue {
   noIdImage: Boolean = false;
-  //public dropZone: any;
-  //public browseFileRef: any;
-  //public imagePlaceholderRef: any;
-  //public selectFileLabelRef: any;
-
   images: Array<CommonImage> = new Array<CommonImage>(0);
   // imagesChange: EventEmitter<Array<CommonImage>> = new EventEmitter<Array<CommonImage>>();
   id: string = '';
@@ -45,11 +78,7 @@ export class FileUploaderComponent extends Vue {
   instructionText: string = 'Please upload required ID documents.';
   errorMessages: FileUploaderMsg = {required: 'File is required.'};
 
-  //public canvas: any;
-
-
   // errorDocument: EventEmitter<CommonImage> = new EventEmitter<CommonImage>();
-
 
   /*
    System processing steps
@@ -79,6 +108,9 @@ export class FileUploaderComponent extends Vue {
    */
   constructor() {
     super();
+  }
+
+  mounted() {
     const dragOverStream =
           fromEvent<DragEvent>(this.$refs.dropZone as HTMLElement, 'dragover');
 
@@ -203,6 +235,22 @@ export class FileUploaderComponent extends Vue {
               console.log('completed loading image');
           }
       );
+
+
+
+      const imagePlaceholderEnterKeyStream = merge(
+        fromEvent<KeyboardEvent>(this.$refs.imagePlaceholderRef as HTMLElement, 'keyup'),
+      ).pipe(filter((evt: KeyboardEvent) => evt.key === 'Enter'));
+
+      merge(
+          fromEvent<Event>(this.$refs.imagePlaceholderRef as HTMLElement, 'click'),
+          imagePlaceholderEnterKeyStream
+      ).pipe(
+          map((event) => {
+              event.preventDefault();
+              return event;
+          })
+      ).subscribe( (event) => { (this.$refs.browseFileRef as HTMLElement).dispatchEvent(new MouseEvent('click')); });
   }
 
 
@@ -230,29 +278,14 @@ export class FileUploaderComponent extends Vue {
 
   ngAfterContentInit() {
 
-      const imagePlaceholderEnterKeyStream = merge(
-          fromEvent<KeyboardEvent>(this.$refs.imagePlaceholderRef as HTMLElement, 'keyup'),
-          fromEvent<KeyboardEvent>(this.$refs.selectFileLabelRef as HTMLElement, 'keyup'),
-          // fromEvent<Event>(this.uploadInstructionRef.nativeElement, 'keyup')
-      ).pipe(filter((evt: KeyboardEvent) => evt.key === 'Enter'));
-
-      merge(
-          fromEvent<Event>(this.$refs.imagePlaceholderRef as HTMLElement, 'click'),
-          // fromEvent<Event>(this.uploadInstructionRef.nativeElement, 'click'),
-          imagePlaceholderEnterKeyStream
-      ).pipe(
-          map((event) => {
-              event.preventDefault();
-              return event;
-          })
-      ).subscribe( (event) => { (this.$refs.browseFileRef as HTMLElement).dispatchEvent(new Event('click')); });
+      
   }
 
 
   /** Opens the file upload dialog from the browser. */
   openFileDialog() {
       console.log('opening file dialog');
-      (this.$refs.browseFileRef as HTMLElement).dispatchEvent(new Event('click'));
+      (this.$refs.browseFileRef as HTMLElement).dispatchEvent(new MouseEvent('click'));
   }
 
   /**
@@ -746,4 +779,13 @@ export class FileUploaderComponent extends Vue {
   }
 
 }
+</script>
 
+<style scoped>
+.dropzone {
+  border: 2px dashed lightgrey;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  padding: 2em 4em;
+}
+</style>
