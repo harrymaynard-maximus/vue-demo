@@ -10,7 +10,7 @@
               tabindex="0" multiple :name='id'
               :required='required'
               autocomplete="off"/>
-      <label :for="id" class="file-upload-label d-inline-block ml-3" ref="selectFileLabel" tabindex="0">
+      <label :for="id" class="file-upload-label d-inline-block" ref="selectFileLabel" tabindex="0">
         <span class='h2 color-body'>Select a file</span>
         <span class='d-block description'>{{ instructionText }}</span>
       </label>
@@ -592,11 +592,13 @@ export default class FileUploaderComponent extends Vue {
       const canvas = document.createElement('canvas');
       const imgElsArray: HTMLImageElement[] = [];
       const ctx = canvas.getContext('2d');
+
       reader.onload = function (progressEvt: ProgressEvent) {
 
           const docInitParams = {data: reader.result};
           // TODO - The 'as any' was added when porting to common library from MSP
-          PDFJS.getDocument((docInitParams as any)).then((pdfdoc: any) => {
+          const loadingTask = PDFJS.getDocument((docInitParams));
+          loadingTask.promise.then((pdfdoc: any) => {
               const numPages = pdfdoc.numPages;
               if (currentPage <= pdfdoc.numPages) { getPage(); }
 
@@ -604,15 +606,22 @@ export default class FileUploaderComponent extends Vue {
                   pdfdoc.getPage(currentPage).then(function (page: any) {
                       const viewport = page.getViewport(pdfScaleFactor);
 
-                      canvas.height = viewport.height;
-                      canvas.width = viewport.width;
-
+                      // Sometimes width and height can be NaN, so use viewBox instead.
+                      if (viewport.width && viewport.height) {
+                          canvas.height = viewport.height;
+                          canvas.width = viewport.width;
+                      } else {
+                          canvas.height = viewport.viewBox[3];
+                          canvas.width = viewport.viewBox[2];
+                      }
+                      
                       const renderContext = {
                           canvasContext: ctx,
                           viewport: viewport
                       };
 
-                      page.render(renderContext).then(function () {
+                      const renderTask = page.render(renderContext);
+                      renderTask.promise.then(function () {
                           const imgEl: HTMLImageElement = document.createElement('img');
                           imgEl.src = canvas.toDataURL();
                           imgElsArray.push(imgEl);
@@ -622,7 +631,6 @@ export default class FileUploaderComponent extends Vue {
                           } else {
                               callback(imgElsArray, pdfFile);
                           }
-
                       });
                   }, function (errorReason: string) {
                       error(errorReason);
@@ -632,10 +640,8 @@ export default class FileUploaderComponent extends Vue {
           }, function (errorReason: string) {
               error(errorReason);
           });
-
       };
       reader.readAsArrayBuffer(pdfFile);
-
   }
 
 
@@ -781,11 +787,106 @@ export default class FileUploaderComponent extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .dropzone {
   border: 2px dashed lightgrey;
   margin-bottom: 10px;
   border-radius: 8px;
   padding: 2em 4em;
+}
+.preview-zone {
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: left;
+  align-items: left;
+  
+  .preview-item {
+    position:relative;
+    height: 120px; 
+    text-align: left;
+    margin-left: 1rem;
+    margin-bottom: 1.5rem;
+
+
+    /* Upload Icon CSS*/
+    .icon-upload{
+      opacity: 0.3;
+      margin: 0 auto 15px auto;
+      &:hover {
+        cursor: pointer;
+        opacity: 0.6;
+      }
+    }
+
+    .text-upload{
+      // text-decoration: underline;
+      &:hover{
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.thumbnail-container, .common-thumbnail .thumbnail-container {
+  transition: 0.3s;
+  transform: translateY(0);
+
+  .image-thumbnail, .image-thumbnail-width-priority {
+    padding: 2px 2px 0 2px;
+    border-radius: 5px 5px 0px 0px;
+
+    &:hover {
+      cursor: -webkit-zoom-in;
+      cursor: zoom-in;  
+    }
+  }
+
+  .demo-thumbnail {
+    height: 100px !important;
+    width: 100px;
+    background-color: #CCC;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+      cursor: pointer !important;
+    }
+  }
+
+  .image-thumbnail {
+    max-height: 100px;
+    height: auto;
+    max-width: 100%;
+  }
+  .image-thumbnail-width-priority {
+    max-width: 270px;
+    width: auto;
+    max-height: 100%;
+  }
+
+  &:hover {
+    box-shadow: 0px 15px 10px -10px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+
+    .action-strip {
+      background: darken(#CCC, 2.5%);
+    }
+  }
+
+  .action-strip {
+    height: 2em;
+    border-radius: 0px 0px 5px 5px;
+    text-align: right;
+    font-size: small;
+    margin: 0 2px 0 2px;
+    color: red;
+    padding: 0.3em;
+    transition: 0.3s;  
+  
+    a {
+      text-decoration: none;
+    }
+  }
 }
 </style>
