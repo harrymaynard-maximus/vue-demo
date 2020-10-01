@@ -8,19 +8,20 @@
       v-bind:label="'First Name'"
       v-model.trim.lazy="$v.firstName.$model"
     />
-    <div class="text-danger" v-if="$v.firstName.$dirty && !$v.firstName.required">Field is required</div>
-    <div class="text-danger" v-if="$v.firstName.$dirty && !$v.firstName.minLength">Name must have at least {{$v.firstName.$params.minLength.min}} letters.</div>
+    <div class="text-danger" v-if="$v.firstName.$dirty && !$v.firstName.required" aria-live="assertive">Field is required</div>
+    <div class="text-danger" v-if="$v.firstName.$dirty && !$v.firstName.minLength" aria-live="assertive">Name must have at least {{$v.firstName.$params.minLength.min}} letters.</div>
 
     <Input
       v-bind:label="'Last Name'"
       v-bind:styling="'mt-3'"
       v-model="$v.lastName.$model"
     />
-    <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.required">Field is required</div>
-    <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.minLength">Name must have at least {{$v.lastName.$params.minLength.min}} letters.</div>
+    <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.required" aria-live="assertive">Field is required</div>
+    <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.minLength" aria-live="assertive">Name must have at least {{$v.lastName.$params.minLength.min}} letters.</div>
 
     <div class="mt-3">
-      <FileUploader />
+      <FileUploader v-model="files" />
+      <div class="text-danger" v-if="$v.files.$dirty && !$v.files.required" aria-live="assertive">Upload is required</div>
     </div>
 
     <Button label="Continue"
@@ -48,7 +49,8 @@ export default {
   data: () => {
     return {
       firstName: DataService.firstName,
-      lastName: DataService.lastName
+      lastName: DataService.lastName,
+      files: DataService.files
     };
   },
   validations: {
@@ -59,6 +61,9 @@ export default {
     lastName: {
       required,
       minLength: minLength(4)
+    },
+    files: {
+      required
     }
   },
   methods: {
@@ -69,6 +74,7 @@ export default {
       }
       DataService.firstName = this.firstName;
       DataService.lastName = this.lastName;
+      DataService.files = this.files;
 
       pageStateService.setPageIncomplete(routes.ENROLMENT_PERSONAL_INFO.path);
       const path = routes.ENROLMENT_REVIEW.path;
@@ -81,4 +87,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.text-danger {
+  color: #b33238 !important;
+}
 </style>

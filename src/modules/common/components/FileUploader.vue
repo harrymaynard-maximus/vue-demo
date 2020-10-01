@@ -3,7 +3,7 @@
     <div class="dropzone" ref="dropZone">
 
     <div class="instruction-zone d-flex align-items-center flex-wrap flex-sm-nowrap flex-column flex-sm-row">
-      <i class="fa fa-cloud-upload fa-4x d-inline-block upload-icon" aria-hidden="true" ref="imagePlaceholderRef" tabindex="0"></i>
+      <i class="fa fa-cloud-upload fa-4x d-inline-block upload-icon" ref="imagePlaceholderRef" tabindex="0"></i>
 
       <input type="file" :id="id"
               ref="browseFileRef" ngModel accept="image/*,application/pdf" style="display:none;"
@@ -17,13 +17,9 @@
 
     </div>
 
-    <div role="alert" class='error-container' aria-live="assertive">
-      Upload required.
-    </div>
-
     <div class="preview-zone">
       <div v-for="mspImage of images" :key="mspImage.uuid" class="preview-item">
-        <Thumbnail :imageObject="mspImage" />
+        <Thumbnail :imageObject="mspImage" @delete="deleteImage($event)" />
       </div>
 
         <div class="common-thumbnail" @click='openFileDialog()'>
@@ -614,7 +610,7 @@ export default class FileUploaderComponent extends Vue {
                           canvas.height = viewport.viewBox[3];
                           canvas.width = viewport.viewBox[2];
                       }
-                      
+
                       const renderContext = {
                           canvasContext: ctx,
                           viewport: viewport
@@ -623,6 +619,12 @@ export default class FileUploaderComponent extends Vue {
                       const renderTask = page.render(renderContext);
                       renderTask.promise.then(function () {
                           const imgEl: HTMLImageElement = document.createElement('img');
+                          if (ctx) {
+                            // Image correction: flip image vertically.
+                            ctx.translate(0, canvas.height);
+                            ctx.scale(1, -1);
+                            ctx.drawImage(canvas, 0, 0);  
+                          }
                           imgEl.src = canvas.toDataURL();
                           imgElsArray.push(imgEl);
                           if (currentPage < numPages) {
@@ -686,7 +688,8 @@ export default class FileUploaderComponent extends Vue {
     This file ${mspImage.name} was not uploaded.`);
       } else {
           this.images.push(mspImage);
-          //this.imagesChange.emit(this.images);
+          // this.imagesChange.emit(this.images);
+          this.$emit('input', this.images);
           this.showError = false;
           this.noIdImage = false;
       }
@@ -724,6 +727,7 @@ export default class FileUploaderComponent extends Vue {
       if ( this.required && this.images.length <= 0 ) {
           console.log('No images, resetting input');
       }
+      this.$emit('input', this.images);
   }
 
   /**
