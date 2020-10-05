@@ -25,7 +25,7 @@
         <div class="common-thumbnail" @click='openFileDialog()'>
           <div class="thumbnail-container">
             <div class="image-thumbnail demo-thumbnail">
-              <i class="fa fa-plus fa-3x"></i>
+              <font-awesome-icon :icon="['fa', 'plus']" size="3x" />
             </div>
             <div class="action-strip text-primary">
               Add
@@ -48,6 +48,12 @@ import { Observable ,  Observer, fromEvent, merge } from 'rxjs';
 import {map, filter, flatMap, scan, delay, retryWhen} from 'rxjs/operators';
 import { CommonImage, CommonImageError, CommonImageProcessingError,
 CommonImageScaleFactors, CommonImageScaleFactorsImpl } from '../models/images';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faPlus)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 var loadImage = require('blueimp-load-image');
 var sha1 = require('sha1');
