@@ -27,7 +27,7 @@
             <div class="image-thumbnail demo-thumbnail">
               <font-awesome-icon :icon="['fa', 'plus']" size="3x" />
             </div>
-            <div class="action-strip text-primary">
+            <div class="action-strip text-primary text-center">
               Add
             </div>
           </div>
@@ -65,19 +65,28 @@ export interface FileUploaderMsg {
   required: string;
 }
 
+const FileUploader = Vue.extend({
+  props: {
+    label: {
+      type: String,
+      default: 'Please upload required ID documents.'
+    }
+  }
+});
+
 @Component({
   components: {
     Thumbnail
   }
 })
-export default class FileUploaderComponent extends Vue {
+export default class FileUploaderComponent extends FileUploader {
   noIdImage: Boolean = false;
   images: Array<CommonImage> = new Array<CommonImage>(0);
   // imagesChange: EventEmitter<Array<CommonImage>> = new EventEmitter<Array<CommonImage>>();
   id: string = '';
   showError: boolean = false;
   required: boolean = false;
-  instructionText: string = 'Please upload required ID documents.';
+  instructionText: string = this.label;
   errorMessages: FileUploaderMsg = {required: 'File is required.'};
 
   // errorDocument: EventEmitter<CommonImage> = new EventEmitter<CommonImage>();
@@ -843,7 +852,7 @@ export default class FileUploaderComponent extends Vue {
 
   .image-thumbnail, .image-thumbnail-width-priority {
     padding: 2px 2px 0 2px;
-    border-radius: 5px 5px 0px 0px;
+    border-radius: 5px;
 
     &:hover {
       cursor: -webkit-zoom-in;
@@ -880,7 +889,8 @@ export default class FileUploaderComponent extends Vue {
     transform: translateY(-5px);
 
     .action-strip {
-      background: darken(#CCC, 2.5%);
+      border: solid #CCC thin;
+      margin: -1px 1px -1px 1px;
     }
   }
 
@@ -888,11 +898,11 @@ export default class FileUploaderComponent extends Vue {
     height: 2em;
     border-radius: 0px 0px 5px 5px;
     text-align: right;
-    font-size: small;
     margin: 0 2px 0 2px;
     color: red;
     padding: 0.3em;
-    transition: 0.3s;  
+    transition: 0.3s; 
+    cursor: pointer; 
   
     a {
       text-decoration: none;

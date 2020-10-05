@@ -1,7 +1,7 @@
 <template>
   <div class="thumbnail-container">
     <img :src="imageObject.fileContent" alt="Image Thumbnail" tabindex="0" :class="thumbnailClass">
-    <div class="action-strip">
+    <div class="action-strip text-center">
       <a href="javascript:void(0)" @click="deleteImage($event)" class='text-danger' tabindex="0">Remove</a>
     </div>
   </div>
