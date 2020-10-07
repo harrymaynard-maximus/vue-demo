@@ -40,7 +40,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Thumbnail from '../../common/components/Thumbnail.vue';
@@ -61,10 +61,6 @@ const PDFJS = require('pdfjs-dist/build/pdf');
 var pdfJsWorker = require('pdfjs-dist/build/pdf.worker.entry');
 PDFJS.workerSrc = pdfJsWorker;
 
-export interface FileUploaderMsg {
-  required: string;
-}
-
 const FileUploader = Vue.extend({
   props: {
     label: {
@@ -80,14 +76,12 @@ const FileUploader = Vue.extend({
   }
 })
 export default class FileUploaderComponent extends FileUploader {
-  noIdImage: Boolean = false;
-  images: Array<CommonImage> = new Array<CommonImage>(0);
-  // imagesChange: EventEmitter<Array<CommonImage>> = new EventEmitter<Array<CommonImage>>();
-  id: string = '';
-  showError: boolean = false;
-  required: boolean = false;
-  instructionText: string = this.label;
-  errorMessages: FileUploaderMsg = {required: 'File is required.'};
+  noIdImage = false;
+  images = [];
+  id = '';
+  showError = false;
+  required = false;
+  instructionText = this.label;
 
   // errorDocument: EventEmitter<CommonImage> = new EventEmitter<CommonImage>();
 
@@ -123,7 +117,7 @@ export default class FileUploaderComponent extends FileUploader {
 
   mounted() {
     const dragOverStream =
-          fromEvent<DragEvent>(this.$refs.dropZone as HTMLElement, 'dragover');
+          fromEvent(this.$refs.dropZone, 'dragover');
 
       /**
        * Must cancel the dragover event in order for the drop event to work.
@@ -136,7 +130,7 @@ export default class FileUploaderComponent extends FileUploader {
           }
       });
 
-      const dropStream = fromEvent<DragEvent>(this.$refs.dropZone as HTMLElement, 'drop');
+      const dropStream = fromEvent(this.$refs.dropZone, 'drop');
       const filesArrayFromDrop = dropStream.pipe(
           map(
               function (event) {
@@ -147,7 +141,7 @@ export default class FileUploaderComponent extends FileUploader {
               }
           ));
 
-      const browseFileStream = fromEvent<Event>(this.$refs.browseFileRef as HTMLElement, 'change');
+      const browseFileStream = fromEvent(this.$refs.browseFileRef, 'change');
 
       merge(merge(browseFileStream).pipe(
           map(
@@ -155,10 +149,7 @@ export default class FileUploaderComponent extends FileUploader {
                   if (event) {
                       event.preventDefault();
                       if (event.target) {
-                        interface EventTarget {
-                          [key:string]: any; // Add index signature
-                        }                      
-                        return (event.target as HTMLInputElement).files;
+                        return event.target.files;
                       }
                   }
               }
@@ -172,15 +163,15 @@ export default class FileUploaderComponent extends FileUploader {
               }),
               flatMap(
                   (fileList) => {
-                      return this.observableFromFiles(fileList as FileList, new CommonImageScaleFactorsImpl(1, 1));
+                      return this.observableFromFiles(fileList, new CommonImageScaleFactorsImpl(1, 1));
                   }
               ),
               filter(
                   (mspImage) => {
 
-                      const imageExists = FileUploaderComponent.checkImageExists(mspImage as CommonImage, this.images);
+                      const imageExists = FileUploaderComponent.checkImageExists(mspImage, this.images);
                       if (imageExists) {
-                          this.handleError(CommonImageError.AlreadyExists, mspImage as CommonImage);
+                          this.handleError(CommonImageError.AlreadyExists, mspImage);
                           this.resetInputFields();
                       }
                       return !imageExists;
@@ -189,9 +180,9 @@ export default class FileUploaderComponent extends FileUploader {
               // TODO - Is this necessary? Can likely be removed as it's exactly identical to the preceding.
               filter((mspImage) => {
 
-                  const imageExists = FileUploaderComponent.checkImageExists(mspImage as CommonImage, this.images);
+                  const imageExists = FileUploaderComponent.checkImageExists(mspImage, this.images);
                       if (imageExists) {
-                          this.handleError(CommonImageError.AlreadyExists, mspImage as CommonImage);
+                          this.handleError(CommonImageError.AlreadyExists, mspImage);
                           this.resetInputFields();
                       }
                       return !imageExists;
@@ -199,9 +190,9 @@ export default class FileUploaderComponent extends FileUploader {
               ),
               filter((mspImage) => {
 
-                  const imageSizeOk = this.checkImageDimensions(mspImage as CommonImage);
+                  const imageSizeOk = this.checkImageDimensions(mspImage);
                       if (!imageSizeOk) {
-                          this.handleError(CommonImageError.TooSmall, mspImage as CommonImage);
+                          this.handleError(CommonImageError.TooSmall, mspImage);
                           this.resetInputFields();
                       }
                       return imageSizeOk;
@@ -210,11 +201,11 @@ export default class FileUploaderComponent extends FileUploader {
           ).subscribe(
           (file) => {
 
-              this.handleImageFile(file as CommonImage);
+              this.handleImageFile(file);
               this.resetInputFields();
           },
 
-          (error: any) => {
+          (error) => {
               console.log('Error in loading image: %o', error);
 
               /**
@@ -250,25 +241,25 @@ export default class FileUploaderComponent extends FileUploader {
 
 
       const imagePlaceholderEnterKeyStream = merge(
-        fromEvent<KeyboardEvent>(this.$refs.imagePlaceholderRef as HTMLElement, 'keyup'),
-      ).pipe(filter((evt: KeyboardEvent) => evt.key === 'Enter'));
+        fromEvent(this.$refs.imagePlaceholderRef, 'keyup'),
+      ).pipe(filter((evt) => evt.key === 'Enter'));
 
       merge(
-          fromEvent<Event>(this.$refs.imagePlaceholderRef as HTMLElement, 'click'),
+          fromEvent(this.$refs.imagePlaceholderRef, 'click'),
           imagePlaceholderEnterKeyStream
       ).pipe(
           map((event) => {
               event.preventDefault();
               return event;
           })
-      ).subscribe( (event) => { (this.$refs.browseFileRef as HTMLElement).dispatchEvent(new MouseEvent('click')); });
+      ).subscribe( (event) => { (this.$refs.browseFileRef).dispatchEvent(new MouseEvent('click')); });
   }
 
 
   /**
    * Return true if file already exists in the list; false otherwise.
    */
-  static checkImageExists(file: CommonImage, imageList: Array<CommonImage>) {
+  static checkImageExists(file, imageList) {
       if (!imageList || imageList.length < 1) {
           return false;
       } else {
@@ -285,18 +276,11 @@ export default class FileUploaderComponent extends FileUploader {
       }
   }
 
-  
-
-  ngAfterContentInit() {
-
-      
-  }
-
 
   /** Opens the file upload dialog from the browser. */
   openFileDialog() {
       console.log('opening file dialog');
-      (this.$refs.browseFileRef as HTMLElement).dispatchEvent(new MouseEvent('click'));
+      (this.$refs.browseFileRef).dispatchEvent(new MouseEvent('click'));
   }
 
   /**
@@ -315,7 +299,7 @@ export default class FileUploaderComponent extends FileUploader {
    * @param file
    * @param scaleFactors
    */
-  observableFromFiles(fileList: FileList, scaleFactors: CommonImageScaleFactors) {
+  observableFromFiles(fileList, scaleFactors) {
       /** Previously this was set in appConstants, but that's removed from the common lib. */
       const reductionScaleFactor = 0.8;
 
@@ -327,7 +311,7 @@ export default class FileUploaderComponent extends FileUploader {
      let pageNumber = Math.max(...self.images.map(function(o) {return o.attachmentOrder; }), 0) + 1 ;
 
       // Create our observer
-      const fileObservable = Observable.create((observer: Observer<CommonImage>) => {
+      const fileObservable = Observable.create((observer) => {
           const mspImages = [];
           scaleFactors = scaleFactors.scaleDown(reductionScaleFactor);
           for (let fileIndex = 0; fileIndex < fileList.length; fileIndex++) {
@@ -355,7 +339,7 @@ export default class FileUploaderComponent extends FileUploader {
                    *
                    *  */
 
-                  this.readPDF(file, pdfScaleFactor, (images: HTMLImageElement[] , pdfFile: File) => {
+                  this.readPDF(file, pdfScaleFactor, (images , pdfFile) => {
 
 
                       // this.logService.log({name: file.name + 'is successfully split into ' + images.length + ' images',
@@ -366,21 +350,20 @@ export default class FileUploaderComponent extends FileUploader {
                           this.resizeImage( image, self, scaleFactors, observer, pageNumber , true); // index starts from zero
                           pageNumber = pageNumber + 1  ;
                       });
-                  }, (error: string) => {
+                  }, (error) => {
                       console.log('error' + JSON.stringify(error));
-                      const imageReadError: CommonImageProcessingError =
-                          new CommonImageProcessingError(CommonImageError.CannotOpenPDF, error);
+                      const imageReadError =  new CommonImageProcessingError(CommonImageError.CannotOpenPDF, error);
                       observer.error(imageReadError);
                   });
               } else {
                   // Load image into img element to read natural height and width
-                  this.readImage(file, pageNumber , (image: HTMLImageElement , imageFile: File , nextPageNumber: number)  => {
+                  this.readImage(file, pageNumber , (image , imageFile , nextPageNumber)  => {
                           image.id = imageFile.name; // .name deprecated, changed image.name to image.id
                           this.resizeImage(image, self, scaleFactors, observer , nextPageNumber );
                       },
 
                       // can be ignored for bug, the log line is never called
-                      (error: CommonImageProcessingError) => {
+                      (error) => {
                           console.log('error' + JSON.stringify(error));
                           observer.error(error);
                       });
@@ -394,10 +377,10 @@ export default class FileUploaderComponent extends FileUploader {
   }
 
 
-  private resizeImage( image: HTMLImageElement, self: this, scaleFactors: CommonImageScaleFactors, observer: Observer<CommonImage>, pageNumber: number = 0 , isPdf: boolean = false) {
+  resizeImage( image, self, scaleFactors, observer, pageNumber = 0 , isPdf = false) {
 // While it's still in an image, get it's height and width
-      const mspImage: CommonImage = new CommonImage();
-      const reader: FileReader = new FileReader();
+      const mspImage = new CommonImage();
+      const reader = new FileReader();
       console.log('image.name:' + image.id); // .name deprecated, changed image.name to image.id
       // Copy file properties
       mspImage.name = image.id ;
@@ -423,7 +406,7 @@ export default class FileUploaderComponent extends FileUploader {
       console.log('Start scaling down the image using blueimp-load-image lib: ');
       const scaledImage = loadImage(
           image.src, // NOTE: we pass the File ref here again even though its already read because we need the XIFF metadata
-          function (canvas: HTMLCanvasElement, metadata: any) {
+          function (canvas, metadata) {
 
               // Canvas may be an Event when errors happens
               if (canvas instanceof Event) {
@@ -432,7 +415,7 @@ export default class FileUploaderComponent extends FileUploader {
                   return;
               }
               // Convert to blob to get size
-              canvas.toBlob((blob: Blob | null) => {
+              canvas.toBlob((blob) => {
                       // Copy the blob properties
                       if (blob) {
                         mspImage.size = blob.size;
@@ -445,7 +428,7 @@ export default class FileUploaderComponent extends FileUploader {
                       const nBytes = mspImage.size;
                       let fileSize = '';
                       let fileSizeUnit = '';
-                      let sOutput: string = nBytes + ' bytes';
+                      let sOutput = nBytes + ' bytes';
                       // optional code for multiples approximation
                       for (let aMultiples = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'],
                                nMultiple = 0, nApprox = nBytes / 1024; nApprox > 1; nApprox /= 1024, nMultiple++) {
@@ -460,7 +443,7 @@ export default class FileUploaderComponent extends FileUploader {
                       mspImage.sizeTxt = sOutput;
 
                       // call reader with new transformed image
-                      reader.onload = function (evt: any) {
+                      reader.onload = function (evt) {
 
                           mspImage.fileContent = evt.target.result;
                           mspImage.id = sha1(mspImage.fileContent);
@@ -475,8 +458,7 @@ export default class FileUploaderComponent extends FileUploader {
                               console.log('File size after scaling down: %d, max file size allowed: %d',
                                   mspImage.size, maxSizeBytes);
 
-                              const imageTooBigError: CommonImageProcessingError =
-                                  new CommonImageProcessingError(CommonImageError.TooBig);
+                              const imageTooBigError = new CommonImageProcessingError(CommonImageError.TooBig);
 
                               imageTooBigError.maxSizeAllowed = maxSizeBytes;
                               imageTooBigError.commonImage = mspImage;
@@ -488,7 +470,7 @@ export default class FileUploaderComponent extends FileUploader {
                               observer.next(mspImage);
                           }
                       };
-                      reader.readAsDataURL(blob as Blob);
+                      reader.readAsDataURL(blob);
                   },
 
                   // What mime type to make the blob as and jpeg quality
@@ -508,8 +490,8 @@ export default class FileUploaderComponent extends FileUploader {
   /**
    * Max retry scaling down for maxRetry times.
    */
-  retryStrategy(maxRetry: number) {
-      return function (errors: Observable<CommonImageProcessingError>) {
+  retryStrategy(maxRetry) {
+      return function (errors) {
 
           /**Done: COMPLETE THIS! For some reason can't get scan() to work, types always malformed.*/
 
@@ -527,7 +509,7 @@ export default class FileUploaderComponent extends FileUploader {
 
           return errors.pipe(scan(
               // return errors.pipe(
-              (acc, error: any, index) => {
+              (acc, error, index) => {
                   // console.log('Error encountered: %o', error);;
 
                   /**
@@ -555,17 +537,15 @@ export default class FileUploaderComponent extends FileUploader {
       };
   }
 
-  private readImage(imageFile: File, nextPageNumber: number ,
-                    callback: (image: HTMLImageElement, imageFile: File , nextPageNumber: number) => void,
-                    invalidImageHanlder: (error: CommonImageProcessingError) => void) {
+  readImage(imageFile, nextPageNumber, callback, invalidImageHanlder) {
       const reader = new FileReader();
 
-      reader.onload = function (progressEvt: ProgressEvent) {
+      reader.onload = function (progressEvt) {
 
           console.log('loading image into an img tag: %o', progressEvt);
           // Load into an image element
-          const imgEl: HTMLImageElement = document.createElement('img');
-          imgEl.src = (reader.result as string);
+          const imgEl = document.createElement('img');
+          imgEl.src = (reader.result);
 
           // Wait for onload so all properties are populated
           imgEl.onload = (args) => {
@@ -580,8 +560,7 @@ export default class FileUploaderComponent extends FileUploader {
                   console.log('This image cannot be opened/read, it is probably an invalid image. %o', args);
 
                   // throw new Error('This image cannot be opened/read');
-                  const imageReadError: CommonImageProcessingError =
-                      new CommonImageProcessingError(CommonImageError.CannotOpen);
+                  const imageReadError = new CommonImageProcessingError(CommonImageError.CannotOpen);
 
                   imageReadError.rawImageFile = imageFile;
 
@@ -592,8 +571,7 @@ export default class FileUploaderComponent extends FileUploader {
       reader.readAsDataURL(imageFile);
   }
 
-  private readPDF(pdfFile: File, pdfScaleFactor: number,
-                  callback: (image: HTMLImageElement[], pdfFile: File) => void, error: (errorReason: any) => void) {
+ readPDF(pdfFile, pdfScaleFactor, callback, error) {
 
       PDFJS.disableWorker = true;
       PDFJS.disableStream = true;
@@ -601,20 +579,20 @@ export default class FileUploaderComponent extends FileUploader {
       const reader = new FileReader();
       let currentPage = 1;
       const canvas = document.createElement('canvas');
-      const imgElsArray: HTMLImageElement[] = [];
+      const imgElsArray = [];
       const ctx = canvas.getContext('2d');
 
-      reader.onload = function (progressEvt: ProgressEvent) {
+      reader.onload = function (progressEvt) {
 
           const docInitParams = {data: reader.result};
           // TODO - The 'as any' was added when porting to common library from MSP
           const loadingTask = PDFJS.getDocument((docInitParams));
-          loadingTask.promise.then((pdfdoc: any) => {
+          loadingTask.promise.then((pdfdoc) => {
               const numPages = pdfdoc.numPages;
               if (currentPage <= pdfdoc.numPages) { getPage(); }
 
               function getPage() {
-                  pdfdoc.getPage(currentPage).then(function (page: any) {
+                  pdfdoc.getPage(currentPage).then(function (page) {
                       const viewport = page.getViewport(pdfScaleFactor);
 
                       // Sometimes width and height can be NaN, so use viewBox instead.
@@ -633,7 +611,7 @@ export default class FileUploaderComponent extends FileUploader {
 
                       const renderTask = page.render(renderContext);
                       renderTask.promise.then(function () {
-                          const imgEl: HTMLImageElement = document.createElement('img');
+                          const imgEl = document.createElement('img');
                           if (ctx) {
                             // Image correction: flip image vertically.
                             ctx.translate(0, canvas.height);
@@ -649,12 +627,12 @@ export default class FileUploaderComponent extends FileUploader {
                               callback(imgElsArray, pdfFile);
                           }
                       });
-                  }, function (errorReason: string) {
+                  }, function (errorReason) {
                       error(errorReason);
 
                   });
               }
-          }, function (errorReason: string) {
+          }, function (errorReason) {
               error(errorReason);
           });
       };
@@ -666,7 +644,7 @@ export default class FileUploaderComponent extends FileUploader {
    * Non reversible image filter to take an existing canvas and make it gray scale
    * @param canvas
    */
-  makeGrayScale(canvas: HTMLCanvasElement): void {
+  makeGrayScale(canvas) {
       const context = canvas.getContext('2d');
 
       if (context === null) {
@@ -690,7 +668,7 @@ export default class FileUploaderComponent extends FileUploader {
   }
 
 
-  handleImageFile(mspImage: CommonImage) {
+  handleImageFile(mspImage) {
       console.log('image size (bytes) after compression: ' + mspImage.size);
       if (this.images.length >= 50) {
 
@@ -710,7 +688,7 @@ export default class FileUploaderComponent extends FileUploader {
       }
   }
 
-  handleError(error: CommonImageError, mspImage: CommonImage, errorDescription?: string) {
+  handleError(error, mspImage, errorDescription) {
 
       if (!mspImage) {
           mspImage = new CommonImage();
@@ -729,11 +707,11 @@ export default class FileUploaderComponent extends FileUploader {
   resetInputFields() {
       // let brosweFileInputElement = this.browseFileRef.nativeElement;
       // let captureFileInputElement = this.captureFileRef.nativeElement;
-      (this.$refs.browseFileRef as HTMLInputElement).value = '';
+      (this.$refs.browseFileRef).value = '';
       // this.captureFileRef.nativeElement.value = '';
   }
 
-  deleteImage(mspImage: CommonImage) {
+  deleteImage(mspImage) {
       this.resetInputFields();
       this.images = this.images.filter(x => x.uuid !== mspImage.uuid);
       // this.imagesChange.emit(this.images);
@@ -749,7 +727,7 @@ export default class FileUploaderComponent extends FileUploader {
    * Log image attributes
    * @param mspImage
    */
-  private logImageInfo(title: string, applicationId: string, mspImage: CommonImage, additionalInfo?: string) {
+  logImageInfo(title, applicationId, mspImage, additionalInfo) {
 
       // TODO!
       // // create log entry
@@ -787,7 +765,7 @@ export default class FileUploaderComponent extends FileUploader {
    * Return true if the image size is within range
    * @param file
    */
-  checkImageDimensions(file: CommonImage): boolean {
+  checkImageDimensions(file) {
       if (file.naturalHeight < 0 ||
           file.naturalWidth < 0 ) {
           return false;
@@ -795,7 +773,7 @@ export default class FileUploaderComponent extends FileUploader {
       return true;
   }
 
-  isValid(): boolean {
+  isValid() {
       console.log('isValid', this.images);
       if (this.required) {
           return this.images && this.images.length > 0;
