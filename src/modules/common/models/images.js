@@ -1,38 +1,37 @@
 import { v4 as uuidv4 } from 'uuid';
 
 // NOTE: If you change anything in this enum, check image-error-modal.component.html for tests and file-uploader.component.ts:
-export enum CommonImageError {
-  WrongType,
-  TooSmall,
-  TooBig,
-  AlreadyExists,
-  Unknown,
-  CannotOpen,
-  PDFnotSupported,
-  CannotOpenPDF,
-}
+export var CommonImageError;
+(function (CommonImageError) {
+    CommonImageError[CommonImageError["WrongType"] = 0] = "WrongType";
+    CommonImageError[CommonImageError["TooSmall"] = 1] = "TooSmall";
+    CommonImageError[CommonImageError["TooBig"] = 2] = "TooBig";
+    CommonImageError[CommonImageError["AlreadyExists"] = 3] = "AlreadyExists";
+    CommonImageError[CommonImageError["Unknown"] = 4] = "Unknown";
+    CommonImageError[CommonImageError["CannotOpen"] = 5] = "CannotOpen";
+    CommonImageError[CommonImageError["PDFnotSupported"] = 6] = "PDFnotSupported";
+    CommonImageError[CommonImageError["CannotOpenPDF"] = 7] = "CannotOpenPDF";
+})(CommonImageError || (CommonImageError = {}));
+
 
 export class CommonImageProcessingError {
-  commonImage?: CommonImage;
-  rawImageFile?: File;
-  maxSizeAllowed?: number;
+  commonImage;
+  rawImageFile;
+  maxSizeAllowed;
   // added errorDescription.PDF.JS gives proper error messages as invalid pdf structure or password protected pdf.Good for splunk tracking
-  constructor(public errorCode: CommonImageError, public errorDescription?: string) {
-
-  }
+  constructor(errorCode, errorDescription) {}
 }
 
 /**
  * Image as uploaded by user
  */
-export class CommonImage<T = any> {
-
-  uuid: string;
+export class CommonImage {
+  uuid;
 
   /**
    * @param fileContent (optional) The base64 of an image. See `fileContent` property.
    */
-  constructor(fileContent?: string) {
+  constructor(fileContent) {
     this.uuid = uuidv4();
     if (fileContent) {
       this.fileContent = fileContent;
@@ -44,33 +43,33 @@ export class CommonImage<T = any> {
    * 
    * You should be able to do <img src='myCommonImage.fileContent'> to render the image.
    */
-  fileContent: string = '';
-  documentType: T = {} as T;
+  fileContent = '';
+  documentType = {};
 
   /**
    * ContentType should generally match the MIME type, but can be set as needed by application.
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
    */
-  contentType: string = '';
+  contentType = '';
   // number of bytes.
-  size: number = 0;
-  sizeUnit: string = '';
-  sizeTxt: string = '';
-  naturalHeight: number = 0;
-  naturalWidth: number = 0;
-  name: string = '';
+  size = 0;
+  sizeUnit = '';
+  sizeTxt = '';
+  naturalHeight = 0;
+  naturalWidth = 0;
+  name = '';
 
   // file uniqness checksum
-  id: string = '';
+  id = '';
 
-  error?: CommonImageError;
-  attachmentOrder: number = 0;
+  error;
+  attachmentOrder = 0;
 
   /**
    * Returns the JSON of an image ready to be submitted to the API.  You may
    * have to set attachmentOrder before calling this.
    */
-  toJSON(): CommonAttachmentJson<T> {
+  toJSON() {
     return {
       attachmentOrder: this.attachmentOrder, // will be 0 - should it be 1?
       attachmentUuid: this.uuid,
@@ -80,29 +79,16 @@ export class CommonImage<T = any> {
 
 }
 
-export interface CommonAttachmentJson<T> {
-  attachmentOrder: number;
-  attachmentUuid: string;
-  attachmentDocumentType: T;
-}
+export class CommonImageScaleFactorsImpl {
+  widthFactor;
+  heightFactor;
 
-export interface CommonImageScaleFactors {
-  widthFactor: number;
-  heightFactor: number;
-
-  scaleDown(scale: number): CommonImageScaleFactors;
-}
-
-export class CommonImageScaleFactorsImpl implements CommonImageScaleFactors {
-  widthFactor: number;
-  heightFactor: number;
-
-  constructor(wFactor: number, hFactor: number) {
+  constructor(wFactor, hFactor) {
     this.widthFactor = wFactor;
     this.heightFactor = hFactor;
   }
 
-  scaleDown(scale: number): CommonImageScaleFactors {
+  scaleDown(scale) {
     return new CommonImageScaleFactorsImpl(
       this.widthFactor * scale,
       this.heightFactor * scale);

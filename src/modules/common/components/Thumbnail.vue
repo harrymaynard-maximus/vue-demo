@@ -7,10 +7,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { CommonImage } from '../models/images'
+import { CommonImage } from '../models/images.js'
 
 const ThumbnailProps = Vue.extend({
   props: {
@@ -20,7 +20,7 @@ const ThumbnailProps = Vue.extend({
 
 @Component
 export default class ThumbnailComponent extends ThumbnailProps {
-  scaledWidth: number = 300;
+  scaledWidth = 300;
   // deleteImage: EventEmitter<CommonImage> = new EventEmitter<CommonImage>();
   
   constructor() {
@@ -43,7 +43,7 @@ export default class ThumbnailComponent extends ThumbnailProps {
     }
   }
 
-  get thumbnailClass(): string {
+  get thumbnailClass() {
     if (this.scaledWidth <= 300) {
       return 'image-thumbnail';
     } else {
@@ -51,7 +51,7 @@ export default class ThumbnailComponent extends ThumbnailProps {
     }
   }
 
-  deleteImage(evt: any) {
+  deleteImage(evt) {
     console.log('ThumbnailComponent:Delete from thumbnail: %o', evt);
     console.log('ThumbnailComponent:imageObject:', JSON.stringify(this.imageObject, null, 2));
     this.$emit('delete', this.imageObject);
