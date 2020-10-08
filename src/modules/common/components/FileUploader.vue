@@ -116,8 +116,7 @@ export default class FileUploaderComponent extends FileUploader {
   }
 
   mounted() {
-    const dragOverStream =
-          fromEvent(this.$refs.dropZone, 'dragover');
+      const dragOverStream = fromEvent(this.$refs.dropZone, 'dragover');
 
       /**
        * Must cancel the dragover event in order for the drop event to work.
@@ -230,15 +229,11 @@ export default class FileUploaderComponent extends FileUploader {
                       throw error;
                   }
               }
-
-
           },
           () => {
               console.log('completed loading image');
           }
       );
-
-
 
       const imagePlaceholderEnterKeyStream = merge(
         fromEvent(this.$refs.imagePlaceholderRef, 'keyup'),
@@ -252,7 +247,9 @@ export default class FileUploaderComponent extends FileUploader {
               event.preventDefault();
               return event;
           })
-      ).subscribe( (event) => { (this.$refs.browseFileRef).dispatchEvent(new MouseEvent('click')); });
+      ).subscribe( (event) => {
+          this.$refs.browseFileRef.dispatchEvent(new MouseEvent('click'));
+      });
   }
 
 
@@ -266,7 +263,6 @@ export default class FileUploaderComponent extends FileUploader {
 
           const sha1Sum = sha1(file.fileContent);
           for (let i = imageList.length - 1; i >= 0; i--) {
-              // console.log(`compare  ${imageList[i].id} with ${sha1Sum}, result ${imageList[i].id === sha1Sum}`);
               if (imageList[i].id === sha1Sum) {
                   console.log(`This file ${file.name} has already been uploaded.`);
                   return true;
@@ -280,7 +276,7 @@ export default class FileUploaderComponent extends FileUploader {
   /** Opens the file upload dialog from the browser. */
   openFileDialog() {
       console.log('opening file dialog');
-      (this.$refs.browseFileRef).dispatchEvent(new MouseEvent('click'));
+      this.$refs.browseFileRef.dispatchEvent(new MouseEvent('click'));
   }
 
   /**
@@ -300,37 +296,23 @@ export default class FileUploaderComponent extends FileUploader {
    * @param scaleFactors
    */
   observableFromFiles(fileList, scaleFactors) {
-      /** Previously this was set in appConstants, but that's removed from the common lib. */
       const reductionScaleFactor = 0.8;
 
-      console.log('obserablveFromFiles');
-
-      // Init
       const self = this;
-  //    let  pageNumber = Math.max(...self.images.concat( self.application.getAllImages()).map(function(o) {return o.attachmentOrder; }), 0) + 1 ;
-     let pageNumber = Math.max(...self.images.map(function(o) {return o.attachmentOrder; }), 0) + 1 ;
+      let pageNumber = Math.max(...self.images.map(function(o) {return o.attachmentOrder; }), 0) + 1 ;
 
       // Create our observer
       const fileObservable = Observable.create((observer) => {
           const imageModels = [];
           scaleFactors = scaleFactors.scaleDown(reductionScaleFactor);
+
           for (let fileIndex = 0; fileIndex < fileList.length; fileIndex++) {
               const file = fileList[fileIndex];
               console.log('Start processing file ' + fileIndex + ' of ' + fileList.length + ' %s of size %s bytes %s type', file.name, file.size, file.type);
 
-
-              /* Previously set in appConstants */
               const pdfScaleFactor = 2.0;
 
-              // let imageModel: imageModel = new imageModel();
-              // let reader: FileReader = new FileReader();
-
-              // // Copy file properties
-              // imageModel.name = file.name;
               if (file.type === 'application/pdf') {
-                  // this.logService.log({name: file.name + ' Received in Upload',
-                  //     UUID: self.dataService.getMspUuid()}, 'File_Upload');
-
                   /**
                    *  Page number logic :
                    *      Images - Assign current page number whichever is available..so get the current page number , pass it to call back [reserve it] and increment
@@ -338,13 +320,7 @@ export default class FileUploaderComponent extends FileUploader {
                    *      when PDF is totally read..
                    *
                    *  */
-
                   this.readPDF(file, pdfScaleFactor, (images , pdfFile) => {
-
-
-                      // this.logService.log({name: file.name + 'is successfully split into ' + images.length + ' images',
-                          // UUID: self.dataService.getMspUuid()}, 'File_Upload');
-
                       images.map((image, index) => {
                           image.name = pdfFile.name;
                           this.resizeImage( image, self, scaleFactors, observer, pageNumber , true); // index starts from zero
@@ -378,7 +354,6 @@ export default class FileUploaderComponent extends FileUploader {
 
 
   resizeImage( image, self, scaleFactors, observer, pageNumber = 0 , isPdf = false) {
-// While it's still in an image, get it's height and width
       const imageModel = new CommonImage();
       const reader = new FileReader();
       console.log('image.name:' + image.id); // .name deprecated, changed image.name to image.id
@@ -387,8 +362,6 @@ export default class FileUploaderComponent extends FileUploader {
       if (isPdf) {
           imageModel.name = image.name + '-page' + pageNumber;  // Just give name to pdf
       }
-      // Temporary so we don't have duplicate file names. TODO: Improve.
-      //   imageModel.name += Math.ceil(Math.random()*100);
       imageModel.attachmentOrder = pageNumber ;
 
 
@@ -420,9 +393,6 @@ export default class FileUploaderComponent extends FileUploader {
                       if (blob) {
                         imageModel.size = blob.size;
                       }
-
-                      // log image info (but only for the first time before any scaling)
-                      // if (s
 
                       const fileName = imageModel.name;
                       const nBytes = imageModel.size;
@@ -465,8 +435,6 @@ export default class FileUploaderComponent extends FileUploader {
 
                               observer.error(imageTooBigError);
                           } else {
-                              // log image info
-                              //   self.logImageInfo("msp_file-uploader_after_resize_attributes", self.dataService.getMspUuid(), imageModel);
                               observer.next(imageModel);
                           }
                       };
@@ -492,26 +460,9 @@ export default class FileUploaderComponent extends FileUploader {
    */
   retryStrategy(maxRetry) {
       return function (errors) {
-
-          /**Done: COMPLETE THIS! For some reason can't get scan() to work, types always malformed.*/
-
-          // return errors.pipe(
-          //     // scan((acc, curr) => {acc + curr}, 0)
-          //     scan((acc, error, index) => {
-          //         return acc + error;
-          //     }, 0)
-          // );
-
-          // Done: Unsure if we have to re-implement this line. It causes errors, but simply removing it may not be appropriate.
-          // NOTE: RxJS-compat might be saving us here and "fixing" the errors. See if errors return when we remove rxjs-compat.
-          // return errors.pipe(scan((acc, curr) => acc + curr, 0))
-
-
           return errors.pipe(scan(
               // return errors.pipe(
               (acc, error, index) => {
-                  // console.log('Error encountered: %o', error);;
-
                   /**
                    * If the error is about file too big and we have not reach max retry
                    * yet, theyt keep going to scaling down.
@@ -537,7 +488,7 @@ export default class FileUploaderComponent extends FileUploader {
       };
   }
 
-  readImage(imageFile, nextPageNumber, callback, invalidImageHanlder) {
+  readImage(imageFile, nextPageNumber, callback, invalidImageHandler) {
       const reader = new FileReader();
 
       reader.onload = function (progressEvt) {
@@ -564,7 +515,7 @@ export default class FileUploaderComponent extends FileUploader {
 
                   imageReadError.rawImageFile = imageFile;
 
-                  return invalidImageHanlder(imageReadError);
+                  return invalidImageHandler(imageReadError);
               };
       };
 
@@ -671,17 +622,11 @@ export default class FileUploaderComponent extends FileUploader {
   handleImageFile(imageModel) {
       console.log('image size (bytes) after compression: ' + imageModel.size);
       if (this.images.length >= 50) {
-
-          // log it
-          // this.logImageInfo('msp_file-uploader_error', this.dataService.getMspUuid(),
-          //     imageModel, `Number of image files exceeds max of ${50}`);
-
           // log to console
           console.log(`Max number of image file you can upload is ${50}.
     This file ${imageModel.name} was not uploaded.`);
       } else {
           this.images.push(imageModel);
-          // this.imagesChange.emit(this.images);
           this.$emit('input', this.images);
           this.showError = false;
           this.noIdImage = false;
@@ -705,16 +650,12 @@ export default class FileUploaderComponent extends FileUploader {
    * immediately upload that file again.
    */
   resetInputFields() {
-      // let brosweFileInputElement = this.browseFileRef.nativeElement;
-      // let captureFileInputElement = this.captureFileRef.nativeElement;
-      (this.$refs.browseFileRef).value = '';
-      // this.captureFileRef.nativeElement.value = '';
+      this.$refs.browseFileRef.value = '';
   }
 
   deleteImage(imageModel) {
       this.resetInputFields();
       this.images = this.images.filter(x => x.uuid !== imageModel.uuid);
-      // this.imagesChange.emit(this.images);
 
       // If there are no images yet, we have to reset the input so it triggers 'required'.
       if ( this.required && this.images.length <= 0 ) {
@@ -816,7 +757,6 @@ export default class FileUploaderComponent extends FileUploader {
     }
 
     .text-upload{
-      // text-decoration: underline;
       &:hover{
         cursor: pointer;
       }
@@ -868,7 +808,6 @@ export default class FileUploaderComponent extends FileUploader {
 
     .action-strip {
       border: solid #CCC thin;
-      margin: -1px 1px -1px 1px;
     }
   }
 
