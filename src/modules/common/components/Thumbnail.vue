@@ -8,28 +8,21 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import Component from 'vue-class-component';
 import { CommonImage } from '../models/images.js'
 
-const ThumbnailProps = Vue.extend({
+export default {
   props: {
-    imageObject: CommonImage
-  }
-});
-
-@Component
-export default class ThumbnailComponent extends ThumbnailProps {
-  scaledWidth = 300;
-  // deleteImage: EventEmitter<CommonImage> = new EventEmitter<CommonImage>();
-  
-  constructor() {
-    super();
-  }
-
+    imageObject: {
+      type: CommonImage
+    }
+  },
+  data: () => {
+    return {
+      scaledWidth: 300
+    }
+  },
   mounted() {
     const scaledWidthString = (180 * this.imageObject.naturalWidth / this.imageObject.naturalHeight).toFixed(0);
-    // console.log('scaled width: ' + scaledWidthString);
     this.scaledWidth = parseInt(scaledWidthString, 10);
 
     if (this.scaledWidth > 250) {
@@ -41,23 +34,26 @@ export default class ThumbnailComponent extends ThumbnailProps {
     if (isNaN(this.scaledWidth)) {
       this.scaledWidth = 300;
     }
-  }
-
-  get thumbnailClass() {
-    if (this.scaledWidth <= 300) {
-      return 'image-thumbnail';
-    } else {
-      return 'image-thumbnail-width-priority';
+  },
+  computed: {
+    thumbnailClass() {
+      if (this.scaledWidth <= 300) {
+        return 'image-thumbnail';
+      } else {
+        return 'image-thumbnail-width-priority';
+      }
     }
-  }
-
-  deleteImage(evt) {
-    console.log('ThumbnailComponent:Delete from thumbnail: %o', evt);
-    console.log('ThumbnailComponent:imageObject:', JSON.stringify(this.imageObject, null, 2));
-    this.$emit('delete', this.imageObject);
+  },
+  methods: {
+    deleteImage(evt) {
+      console.log('ThumbnailComponent:Delete from thumbnail: %o', evt);
+      console.log('ThumbnailComponent:imageObject:', JSON.stringify(this.imageObject, null, 2));
+      this.$emit('delete', this.imageObject);
+    }
   }
 }
 </script>
+
 <style scoped>
 .image-thumbnail {
   max-height: 100px;
