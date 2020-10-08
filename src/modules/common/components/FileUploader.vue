@@ -19,7 +19,7 @@
 
     <div class="preview-zone">
       <div v-for="imageModel of images" :key="imageModel.uuid" class="preview-item">
-        <Thumbnail :imageObject="imageModel" @delete="deleteImage($event)" />
+        <Thumbnail :imageObject="imageModel" @delete="deleteImage(imageModel)" />
       </div>
 
         <div class="common-thumbnail" @click='openFileDialog()'>
@@ -42,7 +42,6 @@
 
 <script>
 import Vue from 'vue';
-import Component from 'vue-class-component';
 import Thumbnail from '../../common/components/Thumbnail.vue';
 import { Observable ,  Observer, fromEvent, merge } from 'rxjs';
 import {map, filter, flatMap, scan, delay, retryWhen} from 'rxjs/operators';
@@ -61,28 +60,37 @@ const PDFJS = require('pdfjs-dist/build/pdf');
 var pdfJsWorker = require('pdfjs-dist/build/pdf.worker.entry');
 PDFJS.workerSrc = pdfJsWorker;
 
-const FileUploader = Vue.extend({
+export default {
+  name: 'FileUploader',
+  components: {
+    Thumbnail
+  },
   props: {
-    label: {
+    noIdImage: {
+      type: Boolean,
+      default: false
+    },
+    images: {
+      type: Array,
+      default: () => []
+    },
+    id: {
+      type: String,
+      default: ''
+    },
+    showError: {
+      type: Boolean,
+      default: false
+    },
+    required: {
+      type: Boolean,
+      default: false
+    },
+    instructionText: {
       type: String,
       default: 'Please upload required ID documents.'
     }
-  }
-});
-
-@Component({
-  components: {
-    Thumbnail
-  }
-})
-export default class FileUploaderComponent extends FileUploader {
-  noIdImage = false;
-  images = [];
-  id = '';
-  showError = false;
-  required = false;
-  instructionText = this.label;
-
+  },
   // errorDocument: EventEmitter<CommonImage> = new EventEmitter<CommonImage>();
 
   /*
@@ -111,10 +119,7 @@ export default class FileUploaderComponent extends FileUploader {
    18. Finally, the image is saved into the user's ongoing EA/PA application including localstorage
    19. The image is displayed to user as a thumbnail
    */
-  constructor() {
-    super();
-  }
-
+  
   mounted() {
       const dragOverStream = fromEvent(this.$refs.dropZone, 'dragover');
 
@@ -168,7 +173,7 @@ export default class FileUploaderComponent extends FileUploader {
               filter(
                   (imageModel) => {
 
-                      const imageExists = FileUploaderComponent.checkImageExists(imageModel, this.images);
+                      const imageExists = this.checkImageExists(imageModel, this.images);
                       if (imageExists) {
                           this.handleError(CommonImageError.AlreadyExists, imageModel);
                           this.resetInputFields();
@@ -179,7 +184,7 @@ export default class FileUploaderComponent extends FileUploader {
               // TODO - Is this necessary? Can likely be removed as it's exactly identical to the preceding.
               filter((imageModel) => {
 
-                  const imageExists = FileUploaderComponent.checkImageExists(imageModel, this.images);
+                  const imageExists = this.checkImageExists(imageModel, this.images);
                       if (imageExists) {
                           this.handleError(CommonImageError.AlreadyExists, imageModel);
                           this.resetInputFields();
@@ -250,478 +255,478 @@ export default class FileUploaderComponent extends FileUploader {
       ).subscribe( (event) => {
           this.$refs.browseFileRef.dispatchEvent(new MouseEvent('click'));
       });
+  },
+
+  methods: {
+    /**
+     * Return true if file already exists in the list; false otherwise.
+     */
+    checkImageExists: function(file, imageList) {
+        if (!imageList || imageList.length < 1) {
+            return false;
+        } else {
+
+            const sha1Sum = sha1(file.fileContent);
+            for (let i = imageList.length - 1; i >= 0; i--) {
+                if (imageList[i].id === sha1Sum) {
+                    console.log(`This file ${file.name} has already been uploaded.`);
+                    return true;
+                }
+            }
+            return false;
+        }
+    },
+
+    /** Opens the file upload dialog from the browser. */
+    openFileDialog: function() {
+        console.log('opening file dialog');
+        this.$refs.browseFileRef.dispatchEvent(new MouseEvent('click'));
+    },
+
+    /**
+     * Solve size in this equation: size * 0.8to-the-power-of30 < 1MB, size
+     * will be the max image size this application can accept and scale down
+     * to under 1MB. In this case: size < 807 MB
+     *
+     * 30 is the number of retries. the value for maxRetry passed to retryStrategy
+     * function.
+     *
+     * If: size * 0.8to-the-power-of40 < 1MB, then size < 1262 MB.
+     *
+     * Note: 0.8 is the self.appConstants.images.reductionScaleFactor defined in global.js
+     *
+     *
+     * @param file
+     * @param scaleFactors
+     */
+    observableFromFiles: function(fileList, scaleFactors) {
+        const reductionScaleFactor = 0.8;
+
+        const self = this;
+        let pageNumber = Math.max(...self.images.map(function(o) {return o.attachmentOrder; }), 0) + 1 ;
+
+        // Create our observer
+        const fileObservable = Observable.create((observer) => {
+            const imageModels = [];
+            scaleFactors = scaleFactors.scaleDown(reductionScaleFactor);
+
+            for (let fileIndex = 0; fileIndex < fileList.length; fileIndex++) {
+                const file = fileList[fileIndex];
+                console.log('Start processing file ' + fileIndex + ' of ' + fileList.length + ' %s of size %s bytes %s type', file.name, file.size, file.type);
+
+                const pdfScaleFactor = 2.0;
+
+                if (file.type === 'application/pdf') {
+                    /**
+                     *  Page number logic :
+                     *      Images - Assign current page number whichever is available..so get the current page number , pass it to call back [reserve it] and increment
+                     *      PDF    -  we dont know how many pages..so cant get current number and keep it since it can be multiple pages... so start assigning later point
+                     *      when PDF is totally read..
+                     *
+                     *  */
+                    this.readPDF(file, pdfScaleFactor, (images , pdfFile) => {
+                        images.map((image, index) => {
+                            image.name = pdfFile.name;
+                            this.resizeImage( image, self, scaleFactors, observer, pageNumber , true); // index starts from zero
+                            pageNumber = pageNumber + 1  ;
+                        });
+                    }, (error) => {
+                        console.log('error' + JSON.stringify(error));
+                        const imageReadError =  new CommonImageProcessingError(CommonImageError.CannotOpenPDF, error);
+                        observer.error(imageReadError);
+                    });
+                } else {
+                    // Load image into img element to read natural height and width
+                    this.readImage(file, pageNumber , (image , imageFile , nextPageNumber)  => {
+                            image.id = imageFile.name; // .name deprecated, changed image.name to image.id
+                            this.resizeImage(image, self, scaleFactors, observer , nextPageNumber );
+                        },
+
+                        // can be ignored for bug, the log line is never called
+                        (error) => {
+                            console.log('error' + JSON.stringify(error));
+                            observer.error(error);
+                        });
+                    pageNumber = pageNumber + 1  ;
+                }
+            }
+
+            // retryWhen is potential issue!
+        }).pipe(retryWhen(this.retryStrategy(32)));
+        return fileObservable;
+    },
+
+
+    resizeImage: function( image, self, scaleFactors, observer, pageNumber = 0 , isPdf = false) {
+        const imageModel = new CommonImage();
+        const reader = new FileReader();
+        console.log('image.name:' + image.id); // .name deprecated, changed image.name to image.id
+        // Copy file properties
+        imageModel.name = image.id ;
+        if (isPdf) {
+            imageModel.name = image.name + '-page' + pageNumber;  // Just give name to pdf
+        }
+        imageModel.attachmentOrder = pageNumber ;
+
+
+        imageModel.naturalWidth = image.naturalWidth;
+        imageModel.naturalHeight = image.naturalHeight;
+
+        console.log(`image file natural height and width:
+            ${imageModel.naturalHeight} x ${imageModel.naturalWidth}`);
+
+        // Canvas will force the change to a JPEG
+        imageModel.contentType = 'image/jpeg'; // previously in appConstants
+
+        // Scale the image by loading into a canvas
+
+        console.log('Start scaling down the image using blueimp-load-image lib: ');
+        const scaledImage = loadImage(
+            image.src, // NOTE: we pass the File ref here again even though its already read because we need the XIFF metadata
+            function (canvas, metadata) {
+
+                // Canvas may be an Event when errors happens
+                if (canvas instanceof Event) {
+                    self.handleError(CommonImageError.WrongType, imageModel);
+                    self.resetInputFields();
+                    return;
+                }
+                // Convert to blob to get size
+                canvas.toBlob((blob) => {
+                        // Copy the blob properties
+                        if (blob) {
+                          imageModel.size = blob.size;
+                        }
+
+                        const fileName = imageModel.name;
+                        const nBytes = imageModel.size;
+                        let fileSize = '';
+                        let fileSizeUnit = '';
+                        let sOutput = nBytes + ' bytes';
+                        // optional code for multiples approximation
+                        for (let aMultiples = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'],
+                                nMultiple = 0, nApprox = nBytes / 1024; nApprox > 1; nApprox /= 1024, nMultiple++) {
+
+                            sOutput = nApprox.toFixed(3) + ' ' + aMultiples[nMultiple] + ' (' + nBytes + ' bytes)';
+                            fileSize = nApprox.toFixed(0);
+                            fileSizeUnit = aMultiples[nMultiple];
+                            imageModel.sizeUnit = fileSizeUnit;
+                        }
+
+                        console.log(`File ${fileName} is scaled down to: ${sOutput}`);
+                        imageModel.sizeTxt = sOutput;
+
+                        // call reader with new transformed image
+                        reader.onload = function (evt) {
+
+                            imageModel.fileContent = evt.target.result;
+                            imageModel.id = sha1(imageModel.fileContent);
+
+                            // keep scaling down the image until the image size is
+                            // under max image size
+
+                            /** previously in appConstants */
+                            const maxSizeBytes = 1048576;
+                            if (imageModel.size > maxSizeBytes) {
+
+                                console.log('File size after scaling down: %d, max file size allowed: %d',
+                                    imageModel.size, maxSizeBytes);
+
+                                const imageTooBigError = new CommonImageProcessingError(CommonImageError.TooBig);
+
+                                imageTooBigError.maxSizeAllowed = maxSizeBytes;
+                                imageTooBigError.commonImage = imageModel;
+
+                                observer.error(imageTooBigError);
+                            } else {
+                                observer.next(imageModel);
+                            }
+                        };
+                        reader.readAsDataURL(blob);
+                    },
+
+                    // What mime type to make the blob as and jpeg quality
+                    'image/jpeg', 0.5);
+            },
+            {
+                maxWidth: 2600 * scaleFactors.widthFactor,
+                maxHeight: 3300 * scaleFactors.heightFactor,
+                contain: true,
+                canvas: true,
+                meta: true,
+                orientation: true
+            }
+        );
+    },
+
+    /**
+     * Max retry scaling down for maxRetry times.
+     */
+    retryStrategy: function(maxRetry) {
+        return function (errors) {
+            return errors.pipe(scan(
+                // return errors.pipe(
+                (acc, error, index) => {
+                    /**
+                     * If the error is about file too big and we have not reach max retry
+                     * yet, theyt keep going to scaling down.
+                     */
+                    if (acc < maxRetry && error.errorCode === CommonImageError.TooBig) {
+                        // console.log('Progressively scaling down the image, step %d.', index);
+                        return acc + 1;
+                    } else {
+                        /**
+                         * For either conditions terminate the retry, propogate
+                         * the error.
+                         *
+                         * 1. errors such as CannotRead or any other unknown errors
+                         * not listed in imageModelError enum
+                         * 2. Exceeded maxRetry
+                         *
+                         */
+                        console.log('Re-throw this image process error: %o', error);
+                        throw error;
+                    }
+                }, 0
+            ), delay(2));
+        };
+    },
+
+    readImage: function(imageFile, nextPageNumber, callback, invalidImageHandler) {
+        const reader = new FileReader();
+
+        reader.onload = function (progressEvt) {
+
+            console.log('loading image into an img tag: %o', progressEvt);
+            // Load into an image element
+            const imgEl = document.createElement('img');
+            imgEl.src = (reader.result);
+
+            // Wait for onload so all properties are populated
+            imgEl.onload = (args) => {
+                console.log('Completed image loading into an img tag: %o', args);
+                return callback(imgEl, imageFile, nextPageNumber);
+            };
+
+            imgEl.onerror =
+                (args) => {
+
+                    // log it to the console
+                    console.log('This image cannot be opened/read, it is probably an invalid image. %o', args);
+
+                    // throw new Error('This image cannot be opened/read');
+                    const imageReadError = new CommonImageProcessingError(CommonImageError.CannotOpen);
+
+                    imageReadError.rawImageFile = imageFile;
+
+                    return invalidImageHandler(imageReadError);
+                };
+        };
+
+        reader.readAsDataURL(imageFile);
+    },
+
+  readPDF: function(pdfFile, pdfScaleFactor, callback, error) {
+
+        PDFJS.disableWorker = true;
+        PDFJS.disableStream = true;
+
+        const reader = new FileReader();
+        let currentPage = 1;
+        const canvas = document.createElement('canvas');
+        const imgElsArray = [];
+        const ctx = canvas.getContext('2d');
+
+        reader.onload = function (progressEvt) {
+
+            const docInitParams = {data: reader.result};
+            // TODO - The 'as any' was added when porting to common library from MSP
+            const loadingTask = PDFJS.getDocument((docInitParams));
+            loadingTask.promise.then((pdfdoc) => {
+                const numPages = pdfdoc.numPages;
+                if (currentPage <= pdfdoc.numPages) { getPage(); }
+
+                function getPage() {
+                    pdfdoc.getPage(currentPage).then(function (page) {
+                        const viewport = page.getViewport(pdfScaleFactor);
+
+                        // Sometimes width and height can be NaN, so use viewBox instead.
+                        if (viewport.width && viewport.height) {
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                        } else {
+                            canvas.height = viewport.viewBox[3];
+                            canvas.width = viewport.viewBox[2];
+                        }
+
+                        const renderContext = {
+                            canvasContext: ctx,
+                            viewport: viewport
+                        };
+
+                        const renderTask = page.render(renderContext);
+                        renderTask.promise.then(function () {
+                            const imgEl = document.createElement('img');
+                            if (ctx) {
+                              // Image correction: flip image vertically.
+                              ctx.translate(0, canvas.height);
+                              ctx.scale(1, -1);
+                              ctx.drawImage(canvas, 0, 0);  
+                            }
+                            imgEl.src = canvas.toDataURL();
+                            imgElsArray.push(imgEl);
+                            if (currentPage < numPages) {
+                                currentPage++;
+                                getPage();
+                            } else {
+                                callback(imgElsArray, pdfFile);
+                            }
+                        });
+                    }, function (errorReason) {
+                        error(errorReason);
+
+                    });
+                }
+            }, function (errorReason) {
+                error(errorReason);
+            });
+        };
+        reader.readAsArrayBuffer(pdfFile);
+    },
+
+
+    /**
+     * Non reversible image filter to take an existing canvas and make it gray scale
+     * @param canvas
+     */
+    makeGrayScale: function(canvas) {
+        const context = canvas.getContext('2d');
+
+        if (context === null) {
+          return;
+        }
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+            // red
+            data[i] = brightness;
+            // green
+            data[i + 1] = brightness;
+            // blue
+            data[i + 2] = brightness;
+        }
+
+        // overwrite original image
+        context.putImageData(imageData, 0, 0);
+    },
+
+
+    handleImageFile: function(imageModel) {
+        console.log('image size (bytes) after compression: ' + imageModel.size);
+        if (this.images.length >= 50) {
+            // log to console
+            console.log(`Max number of image file you can upload is ${50}.
+      This file ${imageModel.name} was not uploaded.`);
+        } else {
+            this.images.push(imageModel);
+            this.$emit('input', this.images);
+            this.showError = false;
+            this.noIdImage = false;
+        }
+    },
+
+    handleError: function(error, imageModel, errorDescription) {
+
+        if (!imageModel) {
+            imageModel = new CommonImage();
+        }
+        // just add the error to imageModel
+        imageModel.error = error;
+
+        console.log("error with image: ", imageModel);
+        // this.errorDocument.emit(imageModel);
+    },
+
+    /**
+     * Reset input fields so that user can delete a file and
+     * immediately upload that file again.
+     */
+    resetInputFields: function() {
+        this.$refs.browseFileRef.value = '';
+    },
+
+    deleteImage: function(imageModel) {
+        this.resetInputFields();
+        const index = this.images.findIndex(x => x.uuid === imageModel.uuid);
+        this.images.splice(index, 1);
+
+        // If there are no images yet, we have to reset the input so it triggers 'required'.
+        if ( this.required && this.images.length <= 0 ) {
+            console.log('No images, resetting input');
+        }
+        this.$emit('input', this.images);
+    },
+
+    /**
+     * Log image attributes
+     * @param imageModel
+     */
+    logImageInfo: function(title, applicationId, imageModel, additionalInfo) {
+
+        // TODO!
+        // // create log entry
+        // const log: LogEntry = new LogEntry();
+        // log.applicationId = applicationId;
+        // const now = moment();
+        // log.mspTimestamp = now.toISOString();
+        // log.applicationPhase = title + ':  imageModelId: ' + imageModel.id
+        //     + '  imageModelUuid: ' + imageModel.uuid
+        //     + '  imageModelSize: ' + imageModel.size
+        //     + '  imageModelWidth: ' + imageModel.naturalWidth
+        //     + '  imageModelHeight: ' + imageModel.naturalHeight
+        //     + '  imageModelContentType: ' + imageModel.contentType
+        //     + (additionalInfo ? '  ' + additionalInfo : '');
+
+        // // send it while subscribing to response
+        // this.logService.logIt(log, title).subscribe(
+        //     (response) => {
+        //         // console.log('log rest service response: ');
+        //         // console.log(response);
+        //     },
+        //     (error) => {
+        //         console.log('HTTP error response from logging service: ');
+        //         console.log(error);
+        //     },
+        //     () => {
+        //         // console.log('log rest service completed!');
+        //     }
+        // );
+    },
+
+
+
+    /**
+     * Return true if the image size is within range
+     * @param file
+     */
+    checkImageDimensions: function(file) {
+        if (file.naturalHeight < 0 ||
+            file.naturalWidth < 0 ) {
+            return false;
+        }
+        return true;
+    },
+
+    isValid: function() {
+        console.log('isValid', this.images);
+        if (this.required) {
+            return this.images && this.images.length > 0;
+        }
+        return true;
+    }
   }
-
-
-  /**
-   * Return true if file already exists in the list; false otherwise.
-   */
-  static checkImageExists(file, imageList) {
-      if (!imageList || imageList.length < 1) {
-          return false;
-      } else {
-
-          const sha1Sum = sha1(file.fileContent);
-          for (let i = imageList.length - 1; i >= 0; i--) {
-              if (imageList[i].id === sha1Sum) {
-                  console.log(`This file ${file.name} has already been uploaded.`);
-                  return true;
-              }
-          }
-          return false;
-      }
-  }
-
-
-  /** Opens the file upload dialog from the browser. */
-  openFileDialog() {
-      console.log('opening file dialog');
-      this.$refs.browseFileRef.dispatchEvent(new MouseEvent('click'));
-  }
-
-  /**
-   * Solve size in this equation: size * 0.8to-the-power-of30 < 1MB, size
-   * will be the max image size this application can accept and scale down
-   * to under 1MB. In this case: size < 807 MB
-   *
-   * 30 is the number of retries. the value for maxRetry passed to retryStrategy
-   * function.
-   *
-   * If: size * 0.8to-the-power-of40 < 1MB, then size < 1262 MB.
-   *
-   * Note: 0.8 is the self.appConstants.images.reductionScaleFactor defined in global.js
-   *
-   *
-   * @param file
-   * @param scaleFactors
-   */
-  observableFromFiles(fileList, scaleFactors) {
-      const reductionScaleFactor = 0.8;
-
-      const self = this;
-      let pageNumber = Math.max(...self.images.map(function(o) {return o.attachmentOrder; }), 0) + 1 ;
-
-      // Create our observer
-      const fileObservable = Observable.create((observer) => {
-          const imageModels = [];
-          scaleFactors = scaleFactors.scaleDown(reductionScaleFactor);
-
-          for (let fileIndex = 0; fileIndex < fileList.length; fileIndex++) {
-              const file = fileList[fileIndex];
-              console.log('Start processing file ' + fileIndex + ' of ' + fileList.length + ' %s of size %s bytes %s type', file.name, file.size, file.type);
-
-              const pdfScaleFactor = 2.0;
-
-              if (file.type === 'application/pdf') {
-                  /**
-                   *  Page number logic :
-                   *      Images - Assign current page number whichever is available..so get the current page number , pass it to call back [reserve it] and increment
-                   *      PDF    -  we dont know how many pages..so cant get current number and keep it since it can be multiple pages... so start assigning later point
-                   *      when PDF is totally read..
-                   *
-                   *  */
-                  this.readPDF(file, pdfScaleFactor, (images , pdfFile) => {
-                      images.map((image, index) => {
-                          image.name = pdfFile.name;
-                          this.resizeImage( image, self, scaleFactors, observer, pageNumber , true); // index starts from zero
-                          pageNumber = pageNumber + 1  ;
-                      });
-                  }, (error) => {
-                      console.log('error' + JSON.stringify(error));
-                      const imageReadError =  new CommonImageProcessingError(CommonImageError.CannotOpenPDF, error);
-                      observer.error(imageReadError);
-                  });
-              } else {
-                  // Load image into img element to read natural height and width
-                  this.readImage(file, pageNumber , (image , imageFile , nextPageNumber)  => {
-                          image.id = imageFile.name; // .name deprecated, changed image.name to image.id
-                          this.resizeImage(image, self, scaleFactors, observer , nextPageNumber );
-                      },
-
-                      // can be ignored for bug, the log line is never called
-                      (error) => {
-                          console.log('error' + JSON.stringify(error));
-                          observer.error(error);
-                      });
-                  pageNumber = pageNumber + 1  ;
-              }
-          }
-
-          // retryWhen is potential issue!
-      }).pipe(retryWhen(this.retryStrategy(32)));
-      return fileObservable;
-  }
-
-
-  resizeImage( image, self, scaleFactors, observer, pageNumber = 0 , isPdf = false) {
-      const imageModel = new CommonImage();
-      const reader = new FileReader();
-      console.log('image.name:' + image.id); // .name deprecated, changed image.name to image.id
-      // Copy file properties
-      imageModel.name = image.id ;
-      if (isPdf) {
-          imageModel.name = image.name + '-page' + pageNumber;  // Just give name to pdf
-      }
-      imageModel.attachmentOrder = pageNumber ;
-
-
-      imageModel.naturalWidth = image.naturalWidth;
-      imageModel.naturalHeight = image.naturalHeight;
-
-      console.log(`image file natural height and width:
-          ${imageModel.naturalHeight} x ${imageModel.naturalWidth}`);
-
-      // Canvas will force the change to a JPEG
-      imageModel.contentType = 'image/jpeg'; // previously in appConstants
-
-      // Scale the image by loading into a canvas
-
-      console.log('Start scaling down the image using blueimp-load-image lib: ');
-      const scaledImage = loadImage(
-          image.src, // NOTE: we pass the File ref here again even though its already read because we need the XIFF metadata
-          function (canvas, metadata) {
-
-              // Canvas may be an Event when errors happens
-              if (canvas instanceof Event) {
-                  self.handleError(CommonImageError.WrongType, imageModel);
-                  self.resetInputFields();
-                  return;
-              }
-              // Convert to blob to get size
-              canvas.toBlob((blob) => {
-                      // Copy the blob properties
-                      if (blob) {
-                        imageModel.size = blob.size;
-                      }
-
-                      const fileName = imageModel.name;
-                      const nBytes = imageModel.size;
-                      let fileSize = '';
-                      let fileSizeUnit = '';
-                      let sOutput = nBytes + ' bytes';
-                      // optional code for multiples approximation
-                      for (let aMultiples = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'],
-                               nMultiple = 0, nApprox = nBytes / 1024; nApprox > 1; nApprox /= 1024, nMultiple++) {
-
-                          sOutput = nApprox.toFixed(3) + ' ' + aMultiples[nMultiple] + ' (' + nBytes + ' bytes)';
-                          fileSize = nApprox.toFixed(0);
-                          fileSizeUnit = aMultiples[nMultiple];
-                          imageModel.sizeUnit = fileSizeUnit;
-                      }
-
-                      console.log(`File ${fileName} is scaled down to: ${sOutput}`);
-                      imageModel.sizeTxt = sOutput;
-
-                      // call reader with new transformed image
-                      reader.onload = function (evt) {
-
-                          imageModel.fileContent = evt.target.result;
-                          imageModel.id = sha1(imageModel.fileContent);
-
-                          // keep scaling down the image until the image size is
-                          // under max image size
-
-                          /** previously in appConstants */
-                          const maxSizeBytes = 1048576;
-                          if (imageModel.size > maxSizeBytes) {
-
-                              console.log('File size after scaling down: %d, max file size allowed: %d',
-                                  imageModel.size, maxSizeBytes);
-
-                              const imageTooBigError = new CommonImageProcessingError(CommonImageError.TooBig);
-
-                              imageTooBigError.maxSizeAllowed = maxSizeBytes;
-                              imageTooBigError.commonImage = imageModel;
-
-                              observer.error(imageTooBigError);
-                          } else {
-                              observer.next(imageModel);
-                          }
-                      };
-                      reader.readAsDataURL(blob);
-                  },
-
-                  // What mime type to make the blob as and jpeg quality
-                  'image/jpeg', 0.5);
-          },
-          {
-              maxWidth: 2600 * scaleFactors.widthFactor,
-              maxHeight: 3300 * scaleFactors.heightFactor,
-              contain: true,
-              canvas: true,
-              meta: true,
-              orientation: true
-          }
-      );
-  }
-
-  /**
-   * Max retry scaling down for maxRetry times.
-   */
-  retryStrategy(maxRetry) {
-      return function (errors) {
-          return errors.pipe(scan(
-              // return errors.pipe(
-              (acc, error, index) => {
-                  /**
-                   * If the error is about file too big and we have not reach max retry
-                   * yet, theyt keep going to scaling down.
-                   */
-                  if (acc < maxRetry && error.errorCode === CommonImageError.TooBig) {
-                      // console.log('Progressively scaling down the image, step %d.', index);
-                      return acc + 1;
-                  } else {
-                      /**
-                       * For either conditions terminate the retry, propogate
-                       * the error.
-                       *
-                       * 1. errors such as CannotRead or any other unknown errors
-                       * not listed in imageModelError enum
-                       * 2. Exceeded maxRetry
-                       *
-                       */
-                      console.log('Re-throw this image process error: %o', error);
-                      throw error;
-                  }
-              }, 0
-          ), delay(2));
-      };
-  }
-
-  readImage(imageFile, nextPageNumber, callback, invalidImageHandler) {
-      const reader = new FileReader();
-
-      reader.onload = function (progressEvt) {
-
-          console.log('loading image into an img tag: %o', progressEvt);
-          // Load into an image element
-          const imgEl = document.createElement('img');
-          imgEl.src = (reader.result);
-
-          // Wait for onload so all properties are populated
-          imgEl.onload = (args) => {
-              console.log('Completed image loading into an img tag: %o', args);
-              return callback(imgEl, imageFile, nextPageNumber);
-          };
-
-          imgEl.onerror =
-              (args) => {
-
-                  // log it to the console
-                  console.log('This image cannot be opened/read, it is probably an invalid image. %o', args);
-
-                  // throw new Error('This image cannot be opened/read');
-                  const imageReadError = new CommonImageProcessingError(CommonImageError.CannotOpen);
-
-                  imageReadError.rawImageFile = imageFile;
-
-                  return invalidImageHandler(imageReadError);
-              };
-      };
-
-      reader.readAsDataURL(imageFile);
-  }
-
- readPDF(pdfFile, pdfScaleFactor, callback, error) {
-
-      PDFJS.disableWorker = true;
-      PDFJS.disableStream = true;
-
-      const reader = new FileReader();
-      let currentPage = 1;
-      const canvas = document.createElement('canvas');
-      const imgElsArray = [];
-      const ctx = canvas.getContext('2d');
-
-      reader.onload = function (progressEvt) {
-
-          const docInitParams = {data: reader.result};
-          // TODO - The 'as any' was added when porting to common library from MSP
-          const loadingTask = PDFJS.getDocument((docInitParams));
-          loadingTask.promise.then((pdfdoc) => {
-              const numPages = pdfdoc.numPages;
-              if (currentPage <= pdfdoc.numPages) { getPage(); }
-
-              function getPage() {
-                  pdfdoc.getPage(currentPage).then(function (page) {
-                      const viewport = page.getViewport(pdfScaleFactor);
-
-                      // Sometimes width and height can be NaN, so use viewBox instead.
-                      if (viewport.width && viewport.height) {
-                          canvas.height = viewport.height;
-                          canvas.width = viewport.width;
-                      } else {
-                          canvas.height = viewport.viewBox[3];
-                          canvas.width = viewport.viewBox[2];
-                      }
-
-                      const renderContext = {
-                          canvasContext: ctx,
-                          viewport: viewport
-                      };
-
-                      const renderTask = page.render(renderContext);
-                      renderTask.promise.then(function () {
-                          const imgEl = document.createElement('img');
-                          if (ctx) {
-                            // Image correction: flip image vertically.
-                            ctx.translate(0, canvas.height);
-                            ctx.scale(1, -1);
-                            ctx.drawImage(canvas, 0, 0);  
-                          }
-                          imgEl.src = canvas.toDataURL();
-                          imgElsArray.push(imgEl);
-                          if (currentPage < numPages) {
-                              currentPage++;
-                              getPage();
-                          } else {
-                              callback(imgElsArray, pdfFile);
-                          }
-                      });
-                  }, function (errorReason) {
-                      error(errorReason);
-
-                  });
-              }
-          }, function (errorReason) {
-              error(errorReason);
-          });
-      };
-      reader.readAsArrayBuffer(pdfFile);
-  }
-
-
-  /**
-   * Non reversible image filter to take an existing canvas and make it gray scale
-   * @param canvas
-   */
-  makeGrayScale(canvas) {
-      const context = canvas.getContext('2d');
-
-      if (context === null) {
-        return;
-      }
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-
-      for (let i = 0; i < data.length; i += 4) {
-          const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-          // red
-          data[i] = brightness;
-          // green
-          data[i + 1] = brightness;
-          // blue
-          data[i + 2] = brightness;
-      }
-
-      // overwrite original image
-      context.putImageData(imageData, 0, 0);
-  }
-
-
-  handleImageFile(imageModel) {
-      console.log('image size (bytes) after compression: ' + imageModel.size);
-      if (this.images.length >= 50) {
-          // log to console
-          console.log(`Max number of image file you can upload is ${50}.
-    This file ${imageModel.name} was not uploaded.`);
-      } else {
-          this.images.push(imageModel);
-          this.$emit('input', this.images);
-          this.showError = false;
-          this.noIdImage = false;
-      }
-  }
-
-  handleError(error, imageModel, errorDescription) {
-
-      if (!imageModel) {
-          imageModel = new CommonImage();
-      }
-      // just add the error to imageModel
-      imageModel.error = error;
-
-      console.log("error with image: ", imageModel);
-      // this.errorDocument.emit(imageModel);
-  }
-
-  /**
-   * Reset input fields so that user can delete a file and
-   * immediately upload that file again.
-   */
-  resetInputFields() {
-      this.$refs.browseFileRef.value = '';
-  }
-
-  deleteImage(imageModel) {
-      this.resetInputFields();
-      this.images = this.images.filter(x => x.uuid !== imageModel.uuid);
-
-      // If there are no images yet, we have to reset the input so it triggers 'required'.
-      if ( this.required && this.images.length <= 0 ) {
-          console.log('No images, resetting input');
-      }
-      this.$emit('input', this.images);
-  }
-
-  /**
-   * Log image attributes
-   * @param imageModel
-   */
-  logImageInfo(title, applicationId, imageModel, additionalInfo) {
-
-      // TODO!
-      // // create log entry
-      // const log: LogEntry = new LogEntry();
-      // log.applicationId = applicationId;
-      // const now = moment();
-      // log.mspTimestamp = now.toISOString();
-      // log.applicationPhase = title + ':  imageModelId: ' + imageModel.id
-      //     + '  imageModelUuid: ' + imageModel.uuid
-      //     + '  imageModelSize: ' + imageModel.size
-      //     + '  imageModelWidth: ' + imageModel.naturalWidth
-      //     + '  imageModelHeight: ' + imageModel.naturalHeight
-      //     + '  imageModelContentType: ' + imageModel.contentType
-      //     + (additionalInfo ? '  ' + additionalInfo : '');
-
-      // // send it while subscribing to response
-      // this.logService.logIt(log, title).subscribe(
-      //     (response) => {
-      //         // console.log('log rest service response: ');
-      //         // console.log(response);
-      //     },
-      //     (error) => {
-      //         console.log('HTTP error response from logging service: ');
-      //         console.log(error);
-      //     },
-      //     () => {
-      //         // console.log('log rest service completed!');
-      //     }
-      // );
-  }
-
-
-
-  /**
-   * Return true if the image size is within range
-   * @param file
-   */
-  checkImageDimensions(file) {
-      if (file.naturalHeight < 0 ||
-          file.naturalWidth < 0 ) {
-          return false;
-      }
-      return true;
-  }
-
-  isValid() {
-      console.log('isValid', this.images);
-      if (this.required) {
-          return this.images && this.images.length > 0;
-      }
-      return true;
-  }
-
 }
 </script>
 
