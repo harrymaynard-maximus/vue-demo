@@ -4,13 +4,14 @@
 
     <div class="instruction-zone d-flex align-items-center flex-wrap flex-sm-nowrap flex-column flex-sm-row">
       <i class="fa fa-cloud-upload fa-4x d-inline-block upload-icon" ref="imagePlaceholderRef" tabindex="0"></i>
+      <font-awesome-icon :icon="['fa', 'cloud-upload-alt']" size="3x" />
 
       <input type="file" :id="id"
               ref="browseFileRef" ngModel accept="image/*,application/pdf" style="display:none;"
               tabindex="0" multiple :name='id'
               :required='required'
               autocomplete="off"/>
-      <label :for="id" class="file-upload-label d-inline-block" ref="selectFileLabel" tabindex="0">
+      <label :for="id" class="file-upload-label d-inline-block ml-3" ref="selectFileLabel" tabindex="0">
         <span class='h2 color-body'>Select a file</span>
         <span class='d-block description'>{{ instructionText }}</span>
       </label>
@@ -44,16 +45,17 @@
 
 <script>
 import Vue from 'vue';
-import Thumbnail from '../../common/components/Thumbnail.vue';
+import Thumbnail from './Thumbnail.vue';
 import { Observable ,  Observer, fromEvent, merge } from 'rxjs';
 import {map, filter, flatMap, scan, delay, retryWhen} from 'rxjs/operators';
 import { CommonImage, CommonImageError, CommonImageProcessingError,
-CommonImageScaleFactors, CommonImageScaleFactorsImpl } from '../models/images.js';
+CommonImageScaleFactors, CommonImageScaleFactorsImpl } from './models/images.js';
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faPlus)
+library.add(faPlus);
+library.add(faCloudUploadAlt);
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 var loadImage = require('blueimp-load-image');

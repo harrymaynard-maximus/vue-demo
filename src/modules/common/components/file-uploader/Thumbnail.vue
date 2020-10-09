@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { CommonImage } from '../models/images.js'
+import { CommonImage } from './models/images.js'
 
 export default {
   props: {
