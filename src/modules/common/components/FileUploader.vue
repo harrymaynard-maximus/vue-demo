@@ -35,6 +35,8 @@
       </div>
     </div>
 
+    <div class="text-danger">{{errorMessage}}</div>
+
     <!-- This hidden canvas is used to transform / resize images -->
     <canvas ref="canvas" style="display:none;"></canvas>
   </div>
@@ -89,6 +91,11 @@ export default {
     instructionText: {
       type: String,
       default: 'Please upload required ID documents.'
+    }
+  },
+  data: () => {
+    return {
+      errorMessage: ''
     }
   },
   // errorDocument: EventEmitter<CommonImage> = new EventEmitter<CommonImage>();
@@ -172,7 +179,6 @@ export default {
               ),
               filter(
                   (imageModel) => {
-
                       const imageExists = this.checkImageExists(imageModel, this.images);
                       if (imageExists) {
                           this.handleError(CommonImageError.AlreadyExists, imageModel);
@@ -207,33 +213,11 @@ export default {
 
               this.handleImageFile(file);
               this.resetInputFields();
+              this.errorMessage = '';
           },
 
           (error) => {
-              console.log('Error in loading image: %o', error);
-
-              /**
-               * Handle the error if the image is gigantic that after
-               * 100 times of scaling down by 30% on each step, the image
-               * is still over 1 MB.
-               */
-              if (error.errorCode) {
-                  if (CommonImageError.TooBig === error.errorCode) {
-                      this.handleError(CommonImageError.TooBig, error.image);
-                  } else if (CommonImageError.CannotOpen === error.errorCode) {
-                      if (!error.image) {
-                          error.image = new CommonImage();
-                          if (error.rawImageFile) {
-                              error.image.name = error.rawImageFile.name;
-                          }
-                      }
-                      this.handleError(CommonImageError.CannotOpen, error.image);
-                  } else if (CommonImageError.CannotOpenPDF === error.errorCode) {
-                      this.handleError(CommonImageError.CannotOpenPDF, error.image, error.errorDescription);
-                  } else {
-                      throw error;
-                  }
-              }
+              
           },
           () => {
               console.log('completed loading image');
@@ -327,13 +311,13 @@ export default {
                     this.readPDF(file, pdfScaleFactor, (images , pdfFile) => {
                         images.map((image, index) => {
                             image.name = pdfFile.name;
-                            this.resizeImage( image, self, scaleFactors, observer, pageNumber , true); // index starts from zero
+                            this.resizeImage(image, self, scaleFactors, observer, pageNumber , true); // index starts from zero
                             pageNumber = pageNumber + 1  ;
                         });
                     }, (error) => {
                         console.log('error' + JSON.stringify(error));
                         const imageReadError =  new CommonImageProcessingError(CommonImageError.CannotOpenPDF, error);
-                        observer.error(imageReadError);
+                        self.filterError(imageReadError);
                     });
                 } else {
                     // Load image into img element to read natural height and width
@@ -345,9 +329,9 @@ export default {
                         // can be ignored for bug, the log line is never called
                         (error) => {
                             console.log('error' + JSON.stringify(error));
-                            observer.error(error);
+                            self.filterError(error);
                         });
-                    pageNumber = pageNumber + 1  ;
+                    pageNumber = pageNumber + 1;
                 }
             }
 
@@ -437,7 +421,7 @@ export default {
                                 imageTooBigError.maxSizeAllowed = maxSizeBytes;
                                 imageTooBigError.commonImage = imageModel;
 
-                                observer.error(imageTooBigError);
+                                self.filterError(imageTooBigError);
                             } else {
                                 observer.next(imageModel);
                             }
@@ -637,6 +621,34 @@ export default {
         }
     },
 
+    filterError: function(error) {
+        this.resetInputFields();
+        console.log('Error in loading image: %o', error);
+
+        /**
+         * Handle the error if the image is gigantic that after
+         * 100 times of scaling down by 30% on each step, the image
+         * is still over 1 MB.
+         */
+        if (error.errorCode) {
+            if (CommonImageError.TooBig === error.errorCode) {
+                this.handleError(CommonImageError.TooBig, error.image);
+            } else if (CommonImageError.CannotOpen === error.errorCode) {
+                if (!error.image) {
+                    error.image = new CommonImage();
+                    if (error.rawImageFile) {
+                        error.image.name = error.rawImageFile.name;
+                    }
+                }
+                this.handleError(CommonImageError.CannotOpen, error.image);
+            } else if (CommonImageError.CannotOpenPDF === error.errorCode) {
+                this.handleError(CommonImageError.CannotOpenPDF, error.image, error.errorDescription);
+            } else {
+                throw error;
+            }
+        }
+    },
+
     handleError: function(error, imageModel, errorDescription) {
 
         if (!imageModel) {
@@ -646,7 +658,31 @@ export default {
         imageModel.error = error;
 
         console.log("error with image: ", imageModel);
+        this.errorMessage = this.getErrorMessage(imageModel.error);
         // this.errorDocument.emit(imageModel);
+    },
+
+    getErrorMessage: function(error) {
+      switch(error) {
+        case CommonImageError.WrongType:
+          return 'Wrong file type.';
+        case CommonImageError.TooSmall:
+          return 'File too small.'
+        case CommonImageError.TooBig:
+          return 'File too large.';
+        case CommonImageError.AlreadyExists:
+          return 'File already exists.';
+        case CommonImageError.Unknown:
+          return 'Unknown error.';
+        case CommonImageError.CannotOpen:
+          return 'Cannot open file.';
+        case CommonImageError.PDFnotSupported:
+          return 'This PDF file is not supported.';
+        case CommonImageError.CannotOpenPDF:
+          return 'Cannot open PDF file.'
+        default:
+          return 'An error has occurred.';
+      }
     },
 
     /**

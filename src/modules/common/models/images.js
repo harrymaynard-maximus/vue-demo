@@ -18,8 +18,11 @@ export class CommonImageProcessingError {
   commonImage;
   rawImageFile;
   maxSizeAllowed;
+  errorCode;
   // added errorDescription.PDF.JS gives proper error messages as invalid pdf structure or password protected pdf.Good for splunk tracking
-  constructor(errorCode, errorDescription) {}
+  constructor(errorCode, errorDescription) {
+    this.errorCode = errorCode;
+  }
 }
 
 /**
