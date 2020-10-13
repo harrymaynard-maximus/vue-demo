@@ -4,8 +4,9 @@
 
     <div class="instruction-zone d-flex align-items-center flex-wrap flex-sm-nowrap flex-column flex-sm-row">
       <i class="fa fa-cloud-upload fa-4x d-inline-block upload-icon" ref="imagePlaceholderRef" tabindex="0"></i>
-      <font-awesome-icon :icon="['fa', 'cloud-upload-alt']" size="3x" />
+      <!-- <font-awesome-icon :icon="['fa', 'cloud-upload-alt']" size="3x" /> -->
 
+      <img :src="cloudUploadIconSvg" class="svg-icon" />
       <input type="file" :id="id"
               ref="browseFileRef" ngModel accept="image/*,application/pdf" style="display:none;"
               tabindex="0" multiple :name='id'
@@ -26,7 +27,7 @@
         <div class="common-thumbnail" @click='openFileDialog()'>
           <div class="thumbnail-container">
             <div class="image-thumbnail demo-thumbnail">
-              <font-awesome-icon :icon="['fa', 'plus']" size="3x" />
+              <img :src="plusIconSvg" class="svg-icon" />
             </div>
             <div class="action-strip text-primary text-center">
               Add
@@ -50,13 +51,8 @@ import { Observable ,  Observer, fromEvent, merge } from 'rxjs';
 import {map, filter, flatMap, scan, delay, retryWhen} from 'rxjs/operators';
 import { CommonImage, CommonImageError, CommonImageProcessingError,
 CommonImageScaleFactors, CommonImageScaleFactorsImpl } from './models/images.js';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPlus, faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-library.add(faPlus);
-library.add(faCloudUploadAlt);
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+import plusIconSvg from './images/plus.svg'
+import cloudUploadIconSvg from './images/cloud-upload-alt.svg'
 
 var loadImage = require('blueimp-load-image');
 var sha1 = require('sha1');
@@ -97,7 +93,9 @@ export default {
   },
   data: () => {
     return {
-      errorMessage: ''
+      errorMessage: '',
+      plusIconSvg: plusIconSvg,
+      cloudUploadIconSvg: cloudUploadIconSvg
     }
   },
   // errorDocument: EventEmitter<CommonImage> = new EventEmitter<CommonImage>();
@@ -853,5 +851,10 @@ export default {
 }
 .thumbnail-container .action-strip a, .common-thumbnail .thumbnail-container .action-strip a {
   text-decoration: none;
+}
+
+.svg-icon {
+    width: 60px;
+    height: 60px;
 }
 </style>
