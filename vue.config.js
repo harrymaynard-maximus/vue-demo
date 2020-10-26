@@ -8,5 +8,11 @@ module.exports = {
         changeOrigin: true
       },
     }
+  },
+  pages: {
+    index: {
+      entry: 'src/main.ts',
+      title: 'Vue Demo'
+    }
   }
 };

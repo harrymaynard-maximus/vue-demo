@@ -18,7 +18,7 @@
             styling="bcgov-normal-blue btn"
             v-on:button-click='nextPage' />
             
-    <ConsentModal v-if="!hasAcceptedTerms"
+    <ConsentModal v-if="!$store.state.enrolment.hasAcceptedTerms"
             v-on:accept="acceptConsentModal"
             :heading="'Information Collection Notice'"/>
   </div>
@@ -31,6 +31,7 @@ import DataService from '../../../services/data-service';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
 import { required } from 'vuelidate/lib/validators';
+import actionTypes from '../../../store/action-types';
 
 export default {
   name: 'EnrolmentHome',
@@ -40,8 +41,7 @@ export default {
   },
   data: () => {
     return {
-      hasAcceptedTerms: DataService.hasAcceptedTerms,
-      livesInBC: DataService.livesInBC,
+      livesInBC: null
     };
   },
   validations: {
@@ -50,6 +50,7 @@ export default {
     }
   },
   created: function() {
+    this.livesInBC = this.$store.state.enrolment.livesInBC;
     pageStateService.setPageComplete(routes.ENROLMENT_HOME.path);
   },
   methods: {
@@ -58,19 +59,15 @@ export default {
       if (this.$v.$invalid) {
         return;
       }
-      DataService.hasAcceptedTerms = true;
-      DataService.livesInBC = this.livesInBC;
+
+      this.$store.dispatch(actionTypes.SET_LIVES_IN_BC, this.livesInBC);
 
       const path = routes.ENROLMENT_PERSONAL_INFO.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
     },
-    handleSelect: function(event) {
-      console.log('event: ', event);
-    },
     acceptConsentModal: function() {
-      DataService.hasAcceptedTerms = true;
-      this.hasAcceptedTerms = true;
+      this.$store.dispatch(actionTypes.SET_HAS_ACCEPTED_TERMS, true);
     }
   }
 }
