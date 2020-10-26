@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import actionTypes from '../../../store/action-types';
 import Button from 'vue-shared-components/src/components/button/Button';
 import Input from '../../common/components/Input';
 import FileUploader from '../../common/components/file-uploader/FileUploader.vue';
@@ -72,9 +73,9 @@ export default {
       if (this.$v.$invalid) {
         return;
       }
-      DataService.firstName = this.firstName;
-      DataService.lastName = this.lastName;
-      DataService.files = this.files;
+      this.$store.dispatch(actionTypes.SET_FIRST_NAME, this.firstName);
+      this.$store.dispatch(actionTypes.SET_LAST_NAME, this.lastName);
+      this.$store.dispatch(actionTypes.SET_UPLOADED_IMAGES, this.files);
 
       pageStateService.setPageIncomplete(routes.ENROLMENT_PERSONAL_INFO.path);
       const path = routes.ENROLMENT_REVIEW.path;

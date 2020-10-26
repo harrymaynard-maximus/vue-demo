@@ -41,15 +41,19 @@ export default {
   },
   data: () => {
     return {
-      personalData: [
-        { name: 'First Name', value: DataService.firstName },
-        { name: 'Last Name', value: DataService.lastName }
-      ],
-      otherData: [
-        { name: 'Lives in BC', value: DataService.livesInBC }
-      ],
+      personalData: [],
+      otherData: [],
       signature: null
     };
+  },
+  mounted() {
+    this.personalData = [
+      { name: 'First Name', value: this.$store.state.enrolment.firstName },
+      { name: 'Last Name', value: this.$store.state.enrolment.lastName }
+    ];
+    this.otherData = [
+      { name: 'Lives in BC', value: this.$store.state.enrolment.livesInBC }
+    ];
   },
   validations: {
     signature: {
