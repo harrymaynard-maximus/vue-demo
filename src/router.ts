@@ -3,6 +3,8 @@ import DataService from './services/data-service';
 import Enrolment from './modules/enrolment/components/Enrolment.vue';
 import routes from './routes';
 import pageStateService from './modules/common/services/page-state-service';
+import store from './store/store';
+import actionTypes from '@/store/action-types';
 
 const router = new VueRouter({
   mode: 'history',
@@ -50,7 +52,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   if (to.name !== routes.ENROLMENT_HOME.name && !pageStateService.isPageComplete(to.path)) {
     next({ name: routes.ENROLMENT_HOME.name });
-    DataService.reset();
+    store.dispatch(actionTypes.RESET_FORM);
   } else {
     next();
   }
