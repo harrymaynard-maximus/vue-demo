@@ -1,6 +1,7 @@
 import actionTypes from '../action-types';
 
 export default {
+  namespaced: true,
   state: () => {
     return {
       hasAcceptedTerms: false,

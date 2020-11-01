@@ -31,7 +31,6 @@
 </template>
 
 <script>
-import actionTypes from '../../../store/action-types';
 import Button from 'vue-shared-components/src/components/button/Button';
 import Input from '../../common/components/Input';
 import FileUploader from '../../common/components/file-uploader/FileUploader.vue';
@@ -39,6 +38,9 @@ import DataService from '../../../services/data-service';
 import { required, minLength } from 'vuelidate/lib/validators';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
+import actionTypes from '../../../store/action-types';
+import moduleNames from '../../../store/module-names';
+
 
 export default {
   name: 'EnrolmentPersonalInfo',
@@ -73,9 +75,9 @@ export default {
       if (this.$v.$invalid) {
         return;
       }
-      this.$store.dispatch(actionTypes.SET_FIRST_NAME, this.firstName);
-      this.$store.dispatch(actionTypes.SET_LAST_NAME, this.lastName);
-      this.$store.dispatch(actionTypes.SET_UPLOADED_IMAGES, this.files);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_FIRST_NAME, this.firstName);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_LAST_NAME, this.lastName);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_UPLOADED_IMAGES, this.files);
 
       pageStateService.setPageIncomplete(routes.ENROLMENT_PERSONAL_INFO.path);
       const path = routes.ENROLMENT_REVIEW.path;
