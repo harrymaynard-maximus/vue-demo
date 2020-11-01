@@ -8,12 +8,11 @@
 </template>
 
 <script>
-import { CommonImage } from './models/images.js'
 
 export default {
   props: {
     imageObject: {
-      type: CommonImage
+      type: Object
     }
   },
   data: () => {
