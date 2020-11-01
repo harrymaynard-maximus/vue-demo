@@ -5,7 +5,7 @@ import Vuelidate from 'vuelidate';
 import router from './router';
 import store from './store/store';
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 Vue.use(VueRouter);
 Vue.use(Vuelidate);
@@ -16,5 +16,3 @@ new Vue({
   store,
   render: h => h(App)
 });
-
-

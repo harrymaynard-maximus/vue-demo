@@ -49,7 +49,7 @@ const router = new VueRouter({
   ]
 });
 
-const shouldRedirectHome = (moduleName: string, homeRouteName: string, to: any) => {
+const shouldRedirectHome = (moduleName, homeRouteName, to) => {
   if(to.name.toLowerCase().startsWith(moduleName.toLowerCase())
   && homeRouteName !== to.name
   && !pageStateService.isPageComplete(to.path)) {
