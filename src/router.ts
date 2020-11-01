@@ -1,10 +1,10 @@
 import VueRouter from 'vue-router';
-import DataService from './services/data-service';
 import Enrolment from './modules/enrolment/components/Enrolment.vue';
 import routes from './routes';
 import pageStateService from './modules/common/services/page-state-service';
 import store from './store/store';
 import actionTypes from '@/store/action-types';
+import moduleNames from './module-names';
 
 const router = new VueRouter({
   mode: 'history',
@@ -49,10 +49,19 @@ const router = new VueRouter({
   ]
 });
 
+const shouldRedirectHome = (moduleName: string, homeRouteName: string, to: any) => {
+  if(to.name.toLowerCase().startsWith(moduleName.toLowerCase())
+  && homeRouteName !== to.name
+  && !pageStateService.isPageComplete(to.path)) {
+    return true;
+  }
+  return false;
+};
+
 router.beforeEach((to, from, next) => {
-  if (to.name !== routes.ENROLMENT_HOME.name && !pageStateService.isPageComplete(to.path)) {
+  if (shouldRedirectHome(moduleNames.ENROLMENT, routes.ENROLMENT_HOME.name, to)) {
+    store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.RESET_FORM);
     next({ name: routes.ENROLMENT_HOME.name });
-    store.dispatch(actionTypes.RESET_FORM);
   } else {
     next();
   }

@@ -39,7 +39,7 @@ import { required, minLength } from 'vuelidate/lib/validators';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
 import actionTypes from '../../../store/action-types';
-import moduleNames from '../../../store/module-names';
+import moduleNames from '../../../module-names';
 
 
 export default {

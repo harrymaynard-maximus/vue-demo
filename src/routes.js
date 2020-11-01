@@ -1,3 +1,4 @@
+import moduleNames from './module-names';
 import EnrolmentHome from './modules/enrolment/components/EnrolmentHome.vue';
 import EnrolmentPersonalInfo from './modules/enrolment/components/EnrolmentPersonalInfo.vue';
 import EnrolmentReview from './modules/enrolment/components/EnrolmentReview.vue';
@@ -5,49 +6,41 @@ import EnrolmentSending from './modules/enrolment/components/EnrolmentSending.vu
 import EnrolmentSubmission from './modules/enrolment/components/EnrolmentSubmission.vue';
 import EnrolmentSubmissionError from './modules/enrolment/components/EnrolmentSubmissionError.vue';
 
-export interface Route {
-  path: string;
-  title: string;
-  name: string;
-  component: any;
-  isComplete?: boolean;
-}
-
-export const routes: { [key: string]: Route } = {
+export const routes = {
   ENROLMENT_HOME: {
-    path: '/msp/enrolment/home',
+    path: '/msp/' + moduleNames.ENROLMENT + '/home',
     title: 'Check Eligibility',
-    name: 'EnrolmentHome',
+    name: moduleNames.ENROLMENT + 'Home',
     component: EnrolmentHome
   },
   ENROLMENT_PERSONAL_INFO: {
-    path: '/msp/enrolment/personal-info',
+    path: '/msp/' + moduleNames.ENROLMENT + '/personal-info',
     title: 'Personal Info',
-    name: 'EnrolmentPersonalInfo',
+    name: moduleNames.ENROLMENT + 'PersonalInfo',
     component: EnrolmentPersonalInfo
   },
   ENROLMENT_REVIEW: {
-    path: '/msp/enrolment/review',
+    path: '/msp/' + moduleNames.ENROLMENT + '/review',
     title: 'Review',
-    name: 'EnrolmentReview',
+    name: moduleNames.ENROLMENT + 'Review',
     component: EnrolmentReview
   },
   ENROLMENT_SENDING: {
-    path: '/msp/enrolment/sending',
+    path: '/msp/' + moduleNames.ENROLMENT + '/sending',
     title: 'Sending Application',
-    name: 'EnrolmentSending',
+    name: moduleNames.ENROLMENT + 'Sending',
     component: EnrolmentSending
   },
   ENROLMENT_SUBMISSION: {
-    path: '/msp/enrolment/submission',
+    path: '/msp/' + moduleNames.ENROLMENT + '/submission',
     title: 'Submission',
-    name: 'EnrolmentSubmission',
+    name: moduleNames.ENROLMENT + 'Submission',
     component: EnrolmentSubmission
   },
   ENROLMENT_SUBMISSION_ERROR: {
-    path: '/msp/enrolment/submission-error',
+    path: '/msp/' + moduleNames.ENROLMENT + '/submission-error',
     title: 'Submission Error',
-    name: 'EnrolmentSubmissionError',
+    name: moduleNames.ENROLMENT + 'SubmissionError',
     component: EnrolmentSubmissionError
   }
 }

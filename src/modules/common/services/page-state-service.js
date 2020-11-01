@@ -1,8 +1,8 @@
-import { routes, Route } from '../../../routes';
+import { routes } from '../../../routes';
 import environment from '../../../environments/environment';
 
 class PageStateService {
-  private pages: Array<Route> = [];
+  pages = [];
 
   constructor() {
     this.pages = [];
@@ -15,7 +15,7 @@ class PageStateService {
     }
   }
 
-  setPageIncomplete(path: string) {
+  setPageIncomplete(path) {
     const page = this.pages.find((page) => {
       return page.path === path;
     });
@@ -24,7 +24,7 @@ class PageStateService {
     }
   }
 
-  setPageComplete(path: string) {
+  setPageComplete(path) {
     const page = this.pages.find((page) => {
       return page.path === path;
     });
@@ -33,7 +33,7 @@ class PageStateService {
     }
   }
 
-  isPageComplete(path: string) {
+  isPageComplete(path) {
     const page = this.pages.find((page) => {
       return page.path === path;
     });

@@ -32,7 +32,7 @@ import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
 import { required } from 'vuelidate/lib/validators';
 import actionTypes from '../../../store/action-types';
-import moduleNames from '../../../store/module-names';
+import moduleNames from '../../../module-names';
 
 export default {
   name: 'EnrolmentHome',
