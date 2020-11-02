@@ -7,47 +7,47 @@ import EnrolmentSubmission from './modules/enrolment/components/EnrolmentSubmiss
 import EnrolmentSubmissionError from './modules/enrolment/components/EnrolmentSubmissionError.vue';
 import LandingPage from './modules/LandingPage.vue';
 
-const URL_PREFIX = '/msp/';
+const BASE_URL = '/msp/';
 
 export const routes = {
   LANDING_PAGE: {
-    path: URL_PREFIX + 'landing/',
+    path: BASE_URL + 'landing',
     title: 'Landing Page',
     name: 'LandingPage',
     component: LandingPage
   },
   ENROLMENT_HOME: {
-    path: URL_PREFIX + moduleNames.ENROLMENT + '/home',
+    path: BASE_URL + moduleNames.ENROLMENT + '/home',
     title: 'Check Eligibility',
     name: moduleNames.ENROLMENT + 'Home',
     component: EnrolmentHome
   },
   ENROLMENT_PERSONAL_INFO: {
-    path: URL_PREFIX + moduleNames.ENROLMENT + '/personal-info',
+    path: BASE_URL + moduleNames.ENROLMENT + '/personal-info',
     title: 'Personal Info',
     name: moduleNames.ENROLMENT + 'PersonalInfo',
     component: EnrolmentPersonalInfo
   },
   ENROLMENT_REVIEW: {
-    path: URL_PREFIX + moduleNames.ENROLMENT + '/review',
+    path: BASE_URL + moduleNames.ENROLMENT + '/review',
     title: 'Review',
     name: moduleNames.ENROLMENT + 'Review',
     component: EnrolmentReview
   },
   ENROLMENT_SENDING: {
-    path: URL_PREFIX + moduleNames.ENROLMENT + '/sending',
+    path: BASE_URL + moduleNames.ENROLMENT + '/sending',
     title: 'Sending Application',
     name: moduleNames.ENROLMENT + 'Sending',
     component: EnrolmentSending
   },
   ENROLMENT_SUBMISSION: {
-    path: URL_PREFIX + moduleNames.ENROLMENT + '/submission',
+    path: BASE_URL + moduleNames.ENROLMENT + '/submission',
     title: 'Submission',
     name: moduleNames.ENROLMENT + 'Submission',
     component: EnrolmentSubmission
   },
   ENROLMENT_SUBMISSION_ERROR: {
-    path: URL_PREFIX + moduleNames.ENROLMENT + '/submission-error',
+    path: BASE_URL + moduleNames.ENROLMENT + '/submission-error',
     title: 'Submission Error',
     name: moduleNames.ENROLMENT + 'SubmissionError',
     component: EnrolmentSubmissionError

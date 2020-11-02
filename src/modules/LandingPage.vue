@@ -2,7 +2,7 @@
   <main>
     <Header name="Landing Page" :history="history" />
     <div class="container py-5">
-      <a href="/msp/enrolment/">Enrolment</a>
+      <a href="/msp/enrolment">Enrolment</a>
     </div>
     <Footer />
   </main>
