@@ -5,40 +5,49 @@ import EnrolmentReview from './modules/enrolment/components/EnrolmentReview.vue'
 import EnrolmentSending from './modules/enrolment/components/EnrolmentSending.vue';
 import EnrolmentSubmission from './modules/enrolment/components/EnrolmentSubmission.vue';
 import EnrolmentSubmissionError from './modules/enrolment/components/EnrolmentSubmissionError.vue';
+import LandingPage from './modules/LandingPage.vue';
+
+const URL_PREFIX = '/msp/';
 
 export const routes = {
+  LANDING_PAGE: {
+    path: URL_PREFIX + 'landing/',
+    title: 'Landing Page',
+    name: 'LandingPage',
+    component: LandingPage
+  },
   ENROLMENT_HOME: {
-    path: '/msp/' + moduleNames.ENROLMENT + '/home',
+    path: URL_PREFIX + moduleNames.ENROLMENT + '/home',
     title: 'Check Eligibility',
     name: moduleNames.ENROLMENT + 'Home',
     component: EnrolmentHome
   },
   ENROLMENT_PERSONAL_INFO: {
-    path: '/msp/' + moduleNames.ENROLMENT + '/personal-info',
+    path: URL_PREFIX + moduleNames.ENROLMENT + '/personal-info',
     title: 'Personal Info',
     name: moduleNames.ENROLMENT + 'PersonalInfo',
     component: EnrolmentPersonalInfo
   },
   ENROLMENT_REVIEW: {
-    path: '/msp/' + moduleNames.ENROLMENT + '/review',
+    path: URL_PREFIX + moduleNames.ENROLMENT + '/review',
     title: 'Review',
     name: moduleNames.ENROLMENT + 'Review',
     component: EnrolmentReview
   },
   ENROLMENT_SENDING: {
-    path: '/msp/' + moduleNames.ENROLMENT + '/sending',
+    path: URL_PREFIX + moduleNames.ENROLMENT + '/sending',
     title: 'Sending Application',
     name: moduleNames.ENROLMENT + 'Sending',
     component: EnrolmentSending
   },
   ENROLMENT_SUBMISSION: {
-    path: '/msp/' + moduleNames.ENROLMENT + '/submission',
+    path: URL_PREFIX + moduleNames.ENROLMENT + '/submission',
     title: 'Submission',
     name: moduleNames.ENROLMENT + 'Submission',
     component: EnrolmentSubmission
   },
   ENROLMENT_SUBMISSION_ERROR: {
-    path: '/msp/' + moduleNames.ENROLMENT + '/submission-error',
+    path: URL_PREFIX + moduleNames.ENROLMENT + '/submission-error',
     title: 'Submission Error',
     name: moduleNames.ENROLMENT + 'SubmissionError',
     component: EnrolmentSubmissionError

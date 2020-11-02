@@ -5,18 +5,9 @@
 </template>
 
 <script>
-import pageStateService from './modules/common/services/page-state-service';
+import './modules/common/services/page-state-service';
 
 export default {
   name: 'App',
-  components: {
-  },
-  created: function() {
-    pageStateService.importRoutes();
-  }
 }
 </script>
-
-<style>
-
-</style>

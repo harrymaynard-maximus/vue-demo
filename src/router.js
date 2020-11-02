@@ -10,6 +10,11 @@ const router = new VueRouter({
   mode: 'history',
   routes: [
     { 
+      path: routes.LANDING_PAGE.path,
+      name: routes.LANDING_PAGE.name,
+      component: routes.LANDING_PAGE.component,
+    },
+    { 
       path: '/msp/enrolment',
       component: Enrolment,
       redirect: routes.ENROLMENT_HOME.path,
@@ -50,7 +55,7 @@ const router = new VueRouter({
 });
 
 const shouldRedirectHome = (moduleName, homeRouteName, to) => {
-  if(to.name.toLowerCase().startsWith(moduleName.toLowerCase())
+  if(to && to.name && to.name.toLowerCase().startsWith(moduleName.toLowerCase())
   && homeRouteName !== to.name
   && !pageStateService.isPageComplete(to.path)) {
     return true;
@@ -59,10 +64,18 @@ const shouldRedirectHome = (moduleName, homeRouteName, to) => {
 };
 
 router.beforeEach((to, from, next) => {
-  if (shouldRedirectHome(moduleNames.ENROLMENT, routes.ENROLMENT_HOME.name, to)) {
+  // Allow landing page entry.
+  if (to.path === routes.LANDING_PAGE.path) {
+    next();
+  }
+  // Enrolment home redirect.
+  else if (shouldRedirectHome(moduleNames.ENROLMENT, routes.ENROLMENT_HOME.name, to)) {
     store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.RESET_FORM);
     next({ name: routes.ENROLMENT_HOME.name });
-  } else {
+  }
+  
+  // Catch-all (navigation).
+  else {
     next();
   }
 })

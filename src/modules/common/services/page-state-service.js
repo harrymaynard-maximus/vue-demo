@@ -6,13 +6,13 @@ class PageStateService {
 
   constructor() {
     this.pages = [];
+    for (let key in routes) {
+      this.pages.push(routes[key]);
+    }
     console.log('Init PageStateService.');
   }
 
   importRoutes() {
-    for (let key in routes) {
-      this.pages.push(routes[key]);
-    }
   }
 
   setPageIncomplete(path) {
