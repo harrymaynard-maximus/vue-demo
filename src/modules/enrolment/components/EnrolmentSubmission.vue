@@ -24,9 +24,12 @@ export default {
   data: () => {
     return {
       history: {},
-      ipAddress: DataService.apiResponse ? DataService.apiResponse.data.ip : '',
+      ipAddress: null,
     };
   },
+  created() {
+    this.ipAddress = this.$store.state.enrolment.apiResponse ? this.$store.state.enrolment.apiResponse.data.ip : ''
+  }
 }
 </script>
 

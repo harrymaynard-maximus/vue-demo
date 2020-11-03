@@ -4,5 +4,8 @@ export default {
   SET_HAS_ACCEPTED_TERMS: 'setHasAcceptedTerms',
   SET_LAST_NAME: 'setLastName',
   SET_LIVES_IN_BC: 'setLivesInBC',
-  SET_UPLOADED_IMAGES: 'setUploadedImages'
+  SET_UPLOADED_IMAGES: 'setUploadedImages',
+  SET_SIGNATURE: 'setSignature',
+  SET_API_RESPONSE: 'setApiResponse',
+  SET_API_ERROR: 'setApiError'
 };

@@ -16,7 +16,9 @@ import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
 import routes from '../../../routes';
 import pageStateService from '../../common/services/page-state-service';
-import DataService from '../../../services/data-service'
+import DataService from '../../../services/data-service';
+import moduleNames from '../../../module-names';
+import actionTypes from '../../../store/action-types';
 import axios from 'axios';
 
 export default {
@@ -33,10 +35,10 @@ export default {
   created: function() {
     // Error URL: https://run.mocky.io/v3/379961d9-61a0-4b9e-a3d7-a32b00937f8f
     axios.get('https://api.ipify.org?format=json').then((response) => {
-      DataService.apiResponse = response;
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_API_RESPONSE, response);
       this.nextPage();
     }).catch((error) => {
-      DataService.apiError = error;
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_API_ERROR, error);
       this.navigateToErrorPage();
     });
   },

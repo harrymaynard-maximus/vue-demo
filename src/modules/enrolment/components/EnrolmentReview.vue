@@ -4,16 +4,16 @@
     <hr/>
 
     <h2>Personal Information</h2>
-    <Table :elements='personalData' />
+    <Table :elements='personalReviewData' />
 
     <h2 class="mt-5">Other Information</h2>
-    <Table :elements='otherData' />
+    <Table :elements='otherReviewData' />
 
     <h2 class="mt-5">Signature</h2>
     <div class="form-group">
-      <SignaturePad v-model="signature" />
+      <SignaturePad v-model="signature.fileContent" />
     </div>
-    <img :src="signature" alt="Signature" />
+    <img :src="signature.fileContent" alt="Signature" />
     <br/>
     <div class="text-danger" v-if="$v.signature.$dirty && !$v.signature.required">Signature is required</div>
 
@@ -31,6 +31,9 @@ import DataService from '../../../services/data-service';
 import routes from '../../../routes';
 import pageStateService from '../../common/services/page-state-service';
 import { required } from 'vuelidate/lib/validators';
+import { CommonImage } from '../../common/models/images';
+import actionTypes from '../../../store/action-types';
+import moduleNames from '../../../module-names';
 
 export default {
   name: 'EnrolmentReview',
@@ -41,17 +44,17 @@ export default {
   },
   data: () => {
     return {
-      personalData: [],
-      otherData: [],
-      signature: null
+      personalReviewData: [],
+      otherReviewData: [],
+      signature: new CommonImage()
     };
   },
   mounted() {
-    this.personalData = [
+    this.personalReviewData = [
       { name: 'First Name', value: this.$store.state.enrolment.firstName },
       { name: 'Last Name', value: this.$store.state.enrolment.lastName }
     ];
-    this.otherData = [
+    this.otherReviewData = [
       { name: 'Lives in BC', value: this.$store.state.enrolment.livesInBC }
     ];
   },
@@ -66,7 +69,7 @@ export default {
       if (this.$v.$invalid) {
         return;
       }
-      DataService.signature = this.signature;
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_SIGNATURE, this.signature);
 
       pageStateService.setPageIncomplete(routes.ENROLMENT_REVIEW.path);
       const path = routes.ENROLMENT_SENDING.path;
