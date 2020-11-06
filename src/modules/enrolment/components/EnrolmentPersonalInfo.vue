@@ -20,6 +20,19 @@
     <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.minLength" aria-live="assertive">Name must have at least {{$v.lastName.$params.minLength.min}} letters.</div>
 
     <div class="mt-3">
+      <DateInput
+        :label="'Start Date'"
+        v-model="startDate"
+      />
+      <div class="text-danger" v-if="$v.startDate.$dirty && !$v.startDate.required" aria-live="assertive">Field is required</div>
+      <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.distantFutureValidator" aria-live="assertive">Date is too far in the future.</div>
+      <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.distantPastValidator" aria-live="assertive">Date is too far in the past.</div>
+      <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.beforeDateValidator" aria-live="assertive">Date is after end date.</div>
+      
+      Date: {{startDate}}
+    </div>
+
+    <div class="mt-3">
       <FileUploader v-model="files" />
       <div class="text-danger" v-if="$v.files.$dirty && !$v.files.required" aria-live="assertive">Upload is required</div>
     </div>
@@ -34,7 +47,11 @@
 import Button from 'vue-shared-components/src/components/button/Button';
 import Input from '../../common/components/Input';
 import FileUploader from '../../common/components/file-uploader/FileUploader.vue';
-import DataService from '../../../services/data-service';
+import DateInput, {
+  distantFutureValidator,
+  distantPastValidator,
+  beforeDateValidator
+} from '../../common/components/DateInput.vue';
 import { required, minLength } from 'vuelidate/lib/validators';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
@@ -46,14 +63,17 @@ export default {
   name: 'EnrolmentPersonalInfo',
   components: {
     Button,
+    DateInput,
     FileUploader,
     Input
   },
   data: () => {
     return {
-      firstName: DataService.firstName,
-      lastName: DataService.lastName,
-      files: DataService.files
+      firstName: null,
+      lastName: null,
+      files: null,
+      startDate: null,
+      endDate: null
     };
   },
   validations: {
@@ -67,8 +87,21 @@ export default {
     },
     files: {
       required
+    },
+    startDate: {
+      required,
+      distantFutureValidator,
+      distantPastValidator,
+      beforeDateValidator: beforeDateValidator('endDate')
     }
   },
+  created() {
+    this.firstName = this.$store.state.enrolment.firstName;
+    this.lastName = this.$store.state.enrolment.lastName;
+    this.files = this.$store.state.enrolment.uploadedImages;
+    // this.startDate = new Date('2020-01-01');
+    this.endDate = new Date();
+},
   methods: {
     nextPage: function () {
       this.$v.$touch()

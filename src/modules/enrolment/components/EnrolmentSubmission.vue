@@ -13,7 +13,6 @@
 <script>
 import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
-import DataService from '../../../services/data-service';
 
 export default {
   name: 'EnrolmentSubmission',

@@ -27,7 +27,6 @@
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
 import ConsentModal from '../../common/components/ConsentModal';
-import DataService from '../../../services/data-service';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
 import { required } from 'vuelidate/lib/validators';

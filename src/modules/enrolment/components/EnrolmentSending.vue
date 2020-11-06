@@ -16,7 +16,6 @@ import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
 import routes from '../../../routes';
 import pageStateService from '../../common/services/page-state-service';
-import DataService from '../../../services/data-service';
 import moduleNames from '../../../module-names';
 import actionTypes from '../../../store/action-types';
 import axios from 'axios';

@@ -12,7 +12,6 @@
 <script>
 import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
-import DataService from '../../../services/data-service';
 
 export default {
   name: 'EnrolmentSubmission',
@@ -26,7 +25,7 @@ export default {
     };
   },
   created: () => {
-    console.log('Error: ', DataService.apiError);
+    console.log('Error: ', this.$store.state.enrolment.apiError);
   }
 }
 </script>
