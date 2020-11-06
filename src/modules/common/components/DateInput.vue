@@ -42,13 +42,12 @@ import {
   startOfToday,
   isAfter,
   isBefore,
-  parseISO,
   getDaysInMonth
 } from 'date-fns';
 
 const MAX_YEAR_RANGE = 150;
 
-export const distantFutureValidator = (date, vm) => {
+export const distantFutureValidator = (date) => {
   const distantFuture = addYears(startOfToday(), MAX_YEAR_RANGE);
   return isBefore(date, distantFuture);
 };
@@ -107,7 +106,6 @@ export default {
         const year = this.getNumericValue(this.year);
         const month = this.getNumericValue(this.month);
         const day = this.getNumericValue(this.day);
-        // console.log('CREATING DATE', { year, month, day });
 
         // Date function appears to use setYear() so any year 0-99 results in year 1900 to 1999
         // Set each field individually, use setFullYear() instead of setYear()

@@ -3,11 +3,25 @@
     <h1>Review Application</h1>
     <hr/>
 
-    <h2>Personal Information</h2>
-    <Table :elements='personalReviewData' />
-
-    <h2 class="mt-5">Other Information</h2>
+    <div class="row mt-5">
+      <div class="col-10">
+        <h2>Eligibility</h2>
+      </div>
+      <div class="col-2 text-right">
+        <a href="javascript:void(0)" @click="navigateToHomePage()">Edit</a>
+      </div>
+    </div>
     <Table :elements='otherReviewData' />
+
+    <div class="row mt-5">
+      <div class="col-10">
+        <h2>Personal Information</h2>
+      </div>
+      <div class="col-2 text-right">
+        <a href="javascript:void(0)" @click="navigateToPersonalInfoPage()">Edit</a>
+      </div>
+    </div>
+    <Table :elements='personalReviewData' />
 
     <h2 class="mt-5">Signature</h2>
     <div class="form-group">
@@ -72,6 +86,18 @@ export default {
 
       pageStateService.setPageIncomplete(routes.ENROLMENT_REVIEW.path);
       const path = routes.ENROLMENT_SENDING.path;
+      pageStateService.setPageComplete(path);
+      this.$router.push(path);
+    },
+    navigateToHomePage() {
+      pageStateService.setPageIncomplete(routes.ENROLMENT_REVIEW.path);
+      const path = routes.ENROLMENT_HOME.path;
+      pageStateService.setPageComplete(path);
+      this.$router.push(path);
+    },
+    navigateToPersonalInfoPage() {
+      pageStateService.setPageIncomplete(routes.ENROLMENT_REVIEW.path);
+      const path = routes.ENROLMENT_PERSONAL_INFO.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
     }
