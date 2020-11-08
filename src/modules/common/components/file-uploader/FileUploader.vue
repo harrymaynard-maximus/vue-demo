@@ -3,7 +3,7 @@
     <div class="dropzone" ref="dropZone">
 
     <div class="instruction-zone d-flex align-items-center flex-wrap flex-sm-nowrap flex-column flex-sm-row">
-      <img :src="cloudUploadIconSvg" class="svg-icon d-inline-block mb-3 ml-3" />
+      <img :src="cloudUploadIconSvg" class="svg-icon d-inline-block mb-3 ml-3" alt="Cloud Icon" />
 
       <input type="file" :id="id"
               ref="browseFileRef" ngModel accept="image/*,application/pdf" style="display:none;"
@@ -22,10 +22,10 @@
         <Thumbnail :imageObject="imageModel" @delete="deleteImage(imageModel)" />
       </div>
 
-        <a href="javascrip: void 0;" class="common-thumbnail ml-3" @click='openFileDialog($event)'>
+        <a href="javascript: void(0);" class="common-thumbnail ml-3" @click='openFileDialog($event)'>
           <div class="thumbnail-container">
             <div class="image-thumbnail demo-thumbnail">
-              <img :src="plusIconSvg" class="svg-icon" />
+              <img :src="plusIconSvg" class="svg-icon" alt="Add Icon" />
             </div>
             <div class="action-strip text-primary text-center">
               Add

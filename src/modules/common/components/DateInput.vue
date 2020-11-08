@@ -3,7 +3,9 @@
     <fieldset>
       <legend class="date--legend">{{label}}:</legend>
       <div class="date-row">
-        <select class="form-control monthSelect"
+        <label for="monthSelect">Month:</label>
+        <select id="monthSelect"
+                class="form-control monthSelect"
                 v-model="month"
                 @blur="onBlurMonth($event.target.value)"
                 :disabled='disabled'>
@@ -12,7 +14,9 @@
           <option v-for="(month, index) in monthList" :key="index" :value="index">{{month}}</option>
         </select>
 
-        <input type="number"
+        <label for="dayInput">Day:</label>
+        <input id="dayInput"
+              type="number"
               class="form-control dayInput"
               placeholder="Day"
               v-model="day"
@@ -21,7 +25,9 @@
               maxlength="2"
               autocomplete="off"/>
 
-        <input type="number"
+        <label for="yearInput">Year:</label>
+        <input id="yearInput"
+              type="number"
               class="form-control yearInput"
               placeholder="Year"
               v-model="year"
@@ -167,6 +173,16 @@ legend {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
+}
+label {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
 .monthSelect {
   max-width: 50%;
