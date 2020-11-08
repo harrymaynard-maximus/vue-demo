@@ -28,8 +28,6 @@
       <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.distantFutureValidator" aria-live="assertive">Date is too far in the future.</div>
       <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.distantPastValidator" aria-live="assertive">Date is too far in the past.</div>
       <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.beforeDateValidator" aria-live="assertive">Date is after end date.</div>
-      
-      Date: {{startDate}}
     </div>
 
     <div class="mt-3">
@@ -99,7 +97,7 @@ export default {
     this.firstName = this.$store.state.enrolment.firstName;
     this.lastName = this.$store.state.enrolment.lastName;
     this.files = this.$store.state.enrolment.uploadedImages;
-    // this.startDate = new Date('2020-01-01');
+    this.startDate = this.$store.state.enrolment.startDate;
     this.endDate = new Date();
 },
   methods: {
@@ -110,6 +108,7 @@ export default {
       }
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_FIRST_NAME, this.firstName);
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_LAST_NAME, this.lastName);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_START_DATE, this.startDate);
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_UPLOADED_IMAGES, this.files);
 
       pageStateService.setPageIncomplete(routes.ENROLMENT_PERSONAL_INFO.path);

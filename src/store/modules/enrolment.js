@@ -9,6 +9,7 @@ export default {
       firstName: null,
       lastName: null,
       uploadedImages: [],
+      startDate: null,
       signature: null,
       apiResponse: null,
       apiError: null
@@ -26,6 +27,9 @@ export default {
     },
     setLivesInBC(state, payload) {
       state.livesInBC = payload;
+    },
+    setStartDate(state, payload) {
+      state.startDate = payload;
     },
     setUploadedImages(state, payload) {
       state.uploadedImages = payload;
@@ -62,6 +66,9 @@ export default {
     },
     setLivesInBC({ commit }, livesInBC) {
       commit(actionTypes.SET_LIVES_IN_BC, livesInBC);
+    },
+    setStartDate({ commit }, startDate) {
+      commit(actionTypes.SET_START_DATE, startDate);
     },
     setUploadedImages({ commit }, images) {
       commit(actionTypes.SET_UPLOADED_IMAGES, images);

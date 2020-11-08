@@ -158,7 +158,7 @@ export default {
     Thumbnail
   },
   props: {
-    images: {
+    value: {
       type: Array,
       default: () => []
     },
@@ -177,13 +177,15 @@ export default {
   },
   data: () => {
     return {
+      images: [],
       errorMessage: '',
       plusIconSvg: plusIconSvg,
       cloudUploadIconSvg: cloudUploadIconSvg
     }
   },
-  // errorDocument: EventEmitter<CommonImage> = new EventEmitter<CommonImage>();
-
+  created() {
+    this.images = this.value;
+  },
   /*
    System processing steps
 
@@ -210,7 +212,6 @@ export default {
    18. Finally, the image is saved into the user's ongoing EA/PA application including localstorage
    19. The image is displayed to user as a thumbnail
    */
-  
   mounted() {
       const dragOverStream = fromEvent(this.$refs.dropZone, 'dragover');
 
