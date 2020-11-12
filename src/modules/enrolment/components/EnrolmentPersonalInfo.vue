@@ -53,8 +53,13 @@ import DateInput, {
 import { required, minLength } from 'vuelidate/lib/validators';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
-import actionTypes from '../../../store/action-types';
 import moduleNames from '../../../module-names';
+import {
+  SET_FIRST_NAME,
+  SET_LAST_NAME,
+  SET_START_DATE,
+  SET_UPLOADED_IMAGES
+} from '../../../store/modules/enrolment';
 
 export default {
   name: 'EnrolmentPersonalInfo',
@@ -105,10 +110,10 @@ export default {
       if (this.$v.$invalid) {
         return;
       }
-      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_FIRST_NAME, this.firstName);
-      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_LAST_NAME, this.lastName);
-      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_START_DATE, this.startDate);
-      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_UPLOADED_IMAGES, this.files);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_FIRST_NAME, this.firstName);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_LAST_NAME, this.lastName);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_START_DATE, this.startDate);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_UPLOADED_IMAGES, this.files);
 
       pageStateService.setPageIncomplete(routes.ENROLMENT_PERSONAL_INFO.path);
       const path = routes.ENROLMENT_REVIEW.path;

@@ -2,10 +2,7 @@ import VueRouter from 'vue-router';
 import Enrolment from './modules/enrolment/components/Enrolment.vue';
 import routes from './routes';
 import pageStateService from './modules/common/services/page-state-service';
-import store from './store/store';
-import actionTypes from '@/store/action-types';
 import moduleNames from './module-names';
-import environment from './environments/environment';
 
 const router = new VueRouter({
   mode: 'history',

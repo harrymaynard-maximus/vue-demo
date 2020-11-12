@@ -17,8 +17,11 @@ import Header from 'vue-shared-components/src/components/header/Header';
 import routes from '../../../routes';
 import pageStateService from '../../common/services/page-state-service';
 import moduleNames from '../../../module-names';
-import actionTypes from '../../../store/action-types';
 import axios from 'axios';
+import {
+  SET_API_RESPONSE,
+  SET_API_ERROR
+} from '../../../store/modules/enrolment';
 
 export default {
   name: 'EnrolmentSending',
@@ -34,10 +37,10 @@ export default {
   created: function() {
     // Error URL: https://run.mocky.io/v3/379961d9-61a0-4b9e-a3d7-a32b00937f8f
     axios.get('https://api.ipify.org?format=json').then((response) => {
-      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_API_RESPONSE, response);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_API_RESPONSE, response);
       this.nextPage();
     }).catch((error) => {
-      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_API_ERROR, error);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_API_ERROR, error);
       this.navigateToErrorPage();
     });
   },

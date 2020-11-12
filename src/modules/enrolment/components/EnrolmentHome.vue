@@ -30,8 +30,11 @@ import ConsentModal from '../../common/components/ConsentModal';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
 import { required } from 'vuelidate/lib/validators';
-import actionTypes from '../../../store/action-types';
 import moduleNames from '../../../module-names';
+import {
+  SET_HAS_ACCEPTED_TERMS,
+  SET_LIVES_IN_BC
+} from '../../../store/modules/enrolment';
 
 export default {
   name: 'EnrolmentHome',
@@ -60,7 +63,7 @@ export default {
         return;
       }
 
-      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_LIVES_IN_BC, this.livesInBC);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_LIVES_IN_BC, this.livesInBC);
 
       pageStateService.setPageIncomplete(routes.ENROLMENT_HOME.path);
       const path = routes.ENROLMENT_PERSONAL_INFO.path;
@@ -68,7 +71,7 @@ export default {
       this.$router.push(path);
     },
     acceptConsentModal() {
-      this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_HAS_ACCEPTED_TERMS, true);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_HAS_ACCEPTED_TERMS, true);
     }
   }
 }
