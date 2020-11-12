@@ -56,7 +56,6 @@ import routes from '../../../routes';
 import actionTypes from '../../../store/action-types';
 import moduleNames from '../../../module-names';
 
-
 export default {
   name: 'EnrolmentPersonalInfo',
   components: {
@@ -99,7 +98,7 @@ export default {
     this.files = this.$store.state.enrolment.uploadedImages;
     this.startDate = this.$store.state.enrolment.startDate;
     this.endDate = new Date();
-},
+  },
   methods: {
     nextPage: function () {
       this.$v.$touch()
@@ -116,6 +115,14 @@ export default {
       pageStateService.setPageComplete(path);
       this.$router.push(path);
     },
+  },
+  // Required in order to block back navigation on second page.
+  beforeRouteLeave(to, from, next) {
+    if (to.path === routes.ENROLMENT_REVIEW.path) {
+      next();
+    } else {
+      next(false);
+    }
   }
 }
 </script>

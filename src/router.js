@@ -5,6 +5,7 @@ import pageStateService from './modules/common/services/page-state-service';
 import store from './store/store';
 import actionTypes from '@/store/action-types';
 import moduleNames from './module-names';
+import environment from './environments/environment';
 
 const router = new VueRouter({
   mode: 'history',
@@ -54,7 +55,7 @@ const router = new VueRouter({
   ]
 });
 
-const shouldRedirectHome = (moduleName, homeRouteName, to) => {
+const shouldBlockNavigation = (moduleName, homeRouteName, to) => {
   if(to && to.name && to.name.toLowerCase().startsWith(moduleName.toLowerCase())
   && homeRouteName !== to.name
   && !pageStateService.isPageComplete(to.path)) {
@@ -68,16 +69,16 @@ router.beforeEach((to, from, next) => {
   if (to.path === routes.LANDING_PAGE.path) {
     next();
   }
+
   // Enrolment home redirect.
-  else if (shouldRedirectHome(moduleNames.ENROLMENT, routes.ENROLMENT_HOME.name, to)) {
-    store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.RESET_FORM);
-    next({ name: routes.ENROLMENT_HOME.name });
+  else if (shouldBlockNavigation(moduleNames.ENROLMENT, routes.ENROLMENT_HOME.name, to)) {
+    next(false);
   }
   
   // Catch-all (navigation).
   else {
     next();
   }
-})
+});
 
 export default router;

@@ -49,12 +49,12 @@ export default {
       required,
     }
   },
-  created: function() {
+  created() {
     this.livesInBC = this.$store.state.enrolment.livesInBC;
     pageStateService.setPageComplete(routes.ENROLMENT_HOME.path);
   },
   methods: {
-    nextPage: function () {
+    nextPage() {
       this.$v.$touch()
       if (this.$v.$invalid) {
         return;
@@ -62,11 +62,12 @@ export default {
 
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_LIVES_IN_BC, this.livesInBC);
 
+      pageStateService.setPageIncomplete(routes.ENROLMENT_HOME.path);
       const path = routes.ENROLMENT_PERSONAL_INFO.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
     },
-    acceptConsentModal: function() {
+    acceptConsentModal() {
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + actionTypes.SET_HAS_ACCEPTED_TERMS, true);
     }
   }
