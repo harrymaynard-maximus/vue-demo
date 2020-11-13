@@ -13,6 +13,7 @@
 <script>
 import Footer from 'vue-shared-components/src/components/footer/Footer';
 import Header from 'vue-shared-components/src/components/header/Header';
+import strings from '../../../locale/strings.en';
 
 export default {
   name: 'EnrolmentSubmission',
@@ -22,12 +23,22 @@ export default {
   },
   data: () => {
     return {
+      hasConfirmedPageLeave: false,
       history: {},
       ipAddress: null,
     };
   },
   created() {
     this.ipAddress = this.$store.state.enrolment.apiResponse ? this.$store.state.enrolment.apiResponse.data.ip : ''
+  },
+  beforeRouteLeave(to, from, next) {
+    // Check for `hasConfirmedPageLeave` because of double navigation to home page.
+    if (this.hasConfirmedPageLeave || window.confirm(strings.NAVIGATION_CONFIRMATION_PROMPT)) {
+      this.hasConfirmedPageLeave = true;
+      next();
+    } else {
+      next(false);
+    }
   }
 }
 </script>

@@ -35,7 +35,7 @@ export default {
     clear() {
       this.$refs.signaturePad.clearSignature();
       this.containsSignature = false;
-      this.$emit('input', null);
+      this.$emit('input', ''); // Empty string instead of null is intentional to avoid thrown error.
     },
     onEnd() {
       this.containsSignature = true;

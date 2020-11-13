@@ -45,6 +45,7 @@ import { required } from 'vuelidate/lib/validators';
 import { CommonImage } from '../../common/models/images';
 import moduleNames from '../../../module-names';
 import { SET_SIGNATURE } from '../../../store/modules/enrolment';
+import strings from '../../../locale/strings.en';
 
 const requiredCommonImageContent = (data) => {
   return data && data.fileContent && data.fileContent !== '';
@@ -59,6 +60,7 @@ export default {
   },
   data: () => {
     return {
+      hasConfirmedPageLeave: false,
       personalReviewData: [],
       otherReviewData: [],
       signature: new CommonImage()
@@ -103,6 +105,21 @@ export default {
       const path = routes.ENROLMENT_PERSONAL_INFO.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.path === routes.ENROLMENT_SENDING.path
+    || (to.path === routes.ENROLMENT_HOME.path && pageStateService.isPageComplete(to.path))
+    || (to.path === routes.ENROLMENT_PERSONAL_INFO.path && pageStateService.isPageComplete(to.path))) {
+      next();
+    } else {
+      // Check for `hasConfirmedPageLeave` because of double navigation to home page.
+      if (this.hasConfirmedPageLeave || window.confirm(strings.NAVIGATION_CONFIRMATION_PROMPT)) {
+        this.hasConfirmedPageLeave = true;
+        next();
+      } else {
+        next(false);
+      }
     }
   }
 }

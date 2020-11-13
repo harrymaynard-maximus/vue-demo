@@ -3,6 +3,8 @@ import Enrolment from './modules/enrolment/components/Enrolment.vue';
 import routes from './routes';
 import pageStateService from './modules/common/services/page-state-service';
 import moduleNames from './module-names';
+import store from './store/store';
+import { RESET_FORM } from './store/modules/enrolment';
 
 const router = new VueRouter({
   mode: 'history',
@@ -52,7 +54,7 @@ const router = new VueRouter({
   ]
 });
 
-const shouldBlockNavigation = (moduleName, homeRouteName, to) => {
+const shouldNavigateHome = (moduleName, homeRouteName, to) => {
   if(to && to.name && to.name.toLowerCase().startsWith(moduleName.toLowerCase())
   && homeRouteName !== to.name
   && !pageStateService.isPageComplete(to.path)) {
@@ -68,13 +70,19 @@ router.beforeEach((to, from, next) => {
   }
 
   // Enrolment home redirect.
-  else if (shouldBlockNavigation(moduleNames.ENROLMENT, routes.ENROLMENT_HOME.name, to)) {
-    next(false);
+  else if (shouldNavigateHome(moduleNames.ENROLMENT, routes.ENROLMENT_HOME.name, to)) {
+    next({ name: routes.ENROLMENT_HOME.name });
   }
   
   // Catch-all (navigation).
   else {
     next();
+  }
+});
+
+router.afterEach((to, from) => {
+  if (to.path === routes.ENROLMENT_HOME.path && !pageStateService.isPageComplete(to.path)) {
+    store.dispatch(moduleNames.ENROLMENT + '/' + RESET_FORM);
   }
 });
 

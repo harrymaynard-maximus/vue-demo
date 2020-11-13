@@ -55,11 +55,13 @@ import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
 import moduleNames from '../../../module-names';
 import {
+  RESET_FORM,
   SET_FIRST_NAME,
   SET_LAST_NAME,
   SET_START_DATE,
   SET_UPLOADED_IMAGES
 } from '../../../store/modules/enrolment';
+import strings from '../../../locale/strings.en';
 
 export default {
   name: 'EnrolmentPersonalInfo',
@@ -125,8 +127,12 @@ export default {
   beforeRouteLeave(to, from, next) {
     if (to.path === routes.ENROLMENT_REVIEW.path) {
       next();
-    } else {
-      next(false);
+    } else if (to.path === routes.ENROLMENT_HOME.path) {
+      if (window.confirm(strings.NAVIGATION_CONFIRMATION_PROMPT)) {
+        next();
+      } else {
+        next(false);
+      }
     }
   }
 }

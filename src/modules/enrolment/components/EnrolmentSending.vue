@@ -22,6 +22,7 @@ import {
   SET_API_RESPONSE,
   SET_API_ERROR
 } from '../../../store/modules/enrolment';
+import strings from '../../../locale/strings.en';
 
 export default {
   name: 'EnrolmentSending',
@@ -31,6 +32,7 @@ export default {
   },
   data: () => {
     return {
+      hasConfirmedPageLeave: false,
       history: {}
     };
   },
@@ -56,6 +58,20 @@ export default {
       const path = routes.ENROLMENT_SUBMISSION_ERROR.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.path === routes.ENROLMENT_SUBMISSION.path
+     || to.path === routes.ENROLMENT_SUBMISSION_ERROR.path) {
+      next();
+    } else {
+      // Check for `hasConfirmedPageLeave` because of double navigation to home page.
+      if (this.hasConfirmedPageLeave || window.confirm(strings.NAVIGATION_CONFIRMATION_PROMPT)) {
+        this.hasConfirmedPageLeave = true;
+        next();
+      } else {
+        next(false);
+      }
     }
   }
 }
