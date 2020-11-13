@@ -4,7 +4,7 @@
       <div class='progress-bar' :style='progressBarStyles'></div>
     </div>
     <div class='step-container'>
-      <a href="javascript: void 0;"
+      <a href="javascript:void(0);"
           v-for='route in routes'
           :key='route.path'
           @click="onClickLink(route.path)">
@@ -13,6 +13,7 @@
         </div>
       </a>
     </div>
+    <div class="mobile-step p-3 border-bottom">Step {{currentStepNumber}}/{{routes.length}} - {{currentStepTitle}}</div>
   </div>
 </template>
 
@@ -27,13 +28,25 @@ export default {
     routes: Array,
   },
   computed: {
-    progressBarStyles: function() {
+    progressBarStyles() {
       const index = this.routes.findIndex((element) => {
         return element.path === this.currentPath;
-      })
+      });
       return {
         width: (100 / this.routes.length * index) + (100 / this.routes.length / 2) + '%'
-      }
+      };
+    },
+    currentStepNumber() {
+      const index = this.routes.findIndex((element) => {
+        return element.path === this.currentPath;
+      });
+      return index + 1;
+    },
+    currentStepTitle() {
+      const index = this.routes.findIndex((element) => {
+        return element.path === this.currentPath;
+      });
+      return this.routes[index].title;
     }
   },
   methods: {
@@ -94,5 +107,21 @@ export default {
   white-space: nowrap;
   font-size: small;
   color: #164d80;
+}
+.mobile-step {
+  display: none;
+  font-weight: bold;
+}
+@media only screen and (max-width: 480px) {
+  .component-container {
+    padding: 0;
+  }
+  .progress-bar-container,
+  .step-container {
+    display: none;
+  }
+  .mobile-step {
+    display: block;
+  }
 }
 </style>

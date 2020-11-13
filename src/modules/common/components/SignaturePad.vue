@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="signature-pad-container border rounded">
-      <VueSignaturePad width="500px"
+      <VueSignaturePad :width="signaturePadWidth"
                       height="200px"
                       ref="signaturePad"
                       :options="{ onEnd }" />
@@ -17,6 +17,7 @@
 import Vue from 'vue';
 import VueSignaturePad from 'vue-signature-pad';
 import Button from 'vue-shared-components/src/components/button/Button';
+import { isMobile } from '../helpers/user-agent';
 
 Vue.use(VueSignaturePad);
 
@@ -30,7 +31,11 @@ export default {
       containsSignature: false
     };
   },
-  
+  computed: {
+    signaturePadWidth() {
+      return isMobile() ? '340px' : '500px';
+    }
+  },
   methods: {
     clear() {
       this.$refs.signaturePad.clearSignature();
