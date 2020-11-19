@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="modal fade show" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-      <div class="modal-dialog" role="document">
+      <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h2 class="modal-title" id="exampleModalLabel">{{heading}}</h2>
@@ -55,5 +55,6 @@ export default {
 .modal.show {
   display: block;
   background-color: rgba(0,0,0,0.4);
+  overflow-y: scroll;
 }
 </style>

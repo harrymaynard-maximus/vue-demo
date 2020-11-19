@@ -5,29 +5,36 @@
     <p>After enrolment, the main applicant will be the Medical Services Plan Account Holder, and will be responsible for maintaining the Medical Services Plan account and requesting any changes.</p>
     <hr/>
     <Input
-      v-bind:label="'First Name'"
+      :label="'First Name'"
       v-model.trim.lazy="$v.firstName.$model"
     />
     <div class="text-danger" v-if="$v.firstName.$dirty && !$v.firstName.required" aria-live="assertive">Field is required</div>
     <div class="text-danger" v-if="$v.firstName.$dirty && !$v.firstName.minLength" aria-live="assertive">Name must have at least {{$v.firstName.$params.minLength.min}} letters.</div>
 
     <Input
-      v-bind:label="'Last Name'"
-      v-bind:styling="'mt-3'"
+      :label="'Last Name'"
+      :className="'mt-3'"
       v-model="$v.lastName.$model"
     />
     <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.required" aria-live="assertive">Field is required</div>
     <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.minLength" aria-live="assertive">Name must have at least {{$v.lastName.$params.minLength.min}} letters.</div>
+
+    <AddressValidator
+      :label="'Address'"
+      :className="'mt-3'"
+      v-model="addressSearch"
+      @select="selectAddress($event)"
+    />
 
     <div class="mt-3">
       <DateInput
         :label="'Start Date'"
         v-model="startDate"
       />
-      <div class="text-danger" v-if="$v.startDate.$dirty && !$v.startDate.required" aria-live="assertive">Field is required</div>
+      <div class="text-danger" v-if="$v.startDate.$dirty && !$v.startDate.required" aria-live="assertive">A valid date is required.</div>
       <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.distantFutureValidator" aria-live="assertive">Date is too far in the future.</div>
       <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.distantPastValidator" aria-live="assertive">Date is too far in the past.</div>
-      <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.beforeDateValidator" aria-live="assertive">Date is after end date.</div>
+      <div class="text-danger" v-if="$v.startDate.$dirty && $v.startDate.required && !$v.startDate.beforeDateValidator" aria-live="assertive">Date must be before today.</div>
     </div>
 
     <div class="mt-3">
@@ -45,6 +52,7 @@
 import Button from 'vue-shared-components/src/components/button/Button';
 import Input from '../../common/components/Input';
 import FileUploader from '../../common/components/file-uploader/FileUploader.vue';
+import AddressValidator from '../../common/components/AddressValidator.vue';
 import DateInput, {
   distantFutureValidator,
   distantPastValidator,
@@ -58,6 +66,7 @@ import {
   RESET_FORM,
   SET_FIRST_NAME,
   SET_LAST_NAME,
+  SET_ADDRESS,
   SET_START_DATE,
   SET_UPLOADED_IMAGES
 } from '../../../store/modules/enrolment';
@@ -66,6 +75,7 @@ import strings from '../../../locale/strings.en';
 export default {
   name: 'EnrolmentPersonalInfo',
   components: {
+    AddressValidator,
     Button,
     DateInput,
     FileUploader,
@@ -75,9 +85,11 @@ export default {
     return {
       firstName: null,
       lastName: null,
-      files: null,
+      addressSearch: null,
+      address: {},
       startDate: null,
-      endDate: null
+      endDate: null,
+      files: null,
     };
   },
   validations: {
@@ -102,11 +114,16 @@ export default {
   created() {
     this.firstName = this.$store.state.enrolment.firstName;
     this.lastName = this.$store.state.enrolment.lastName;
-    this.files = this.$store.state.enrolment.uploadedImages;
+    this.addressSearch = this.$store.state.enrolment.address;
     this.startDate = this.$store.state.enrolment.startDate;
     this.endDate = new Date();
+    this.files = this.$store.state.enrolment.uploadedImages;
   },
   methods: {
+    selectAddress(address) {
+      this.addressSearch = address.street;
+      this.address = address;
+    },
     nextPage: function () {
       this.$v.$touch()
       if (this.$v.$invalid) {
@@ -114,6 +131,7 @@ export default {
       }
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_FIRST_NAME, this.firstName);
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_LAST_NAME, this.lastName);
+      this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_ADDRESS, this.addressSearch);
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_START_DATE, this.startDate);
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_UPLOADED_IMAGES, this.files);
 

@@ -1,5 +1,5 @@
 <template>
-  <div :class="styling">
+  <div :class="className">
     <label v-bind:for="'input' + label">{{label}}:</label><br/>
     <input v-bind:id="'input' + label"
            class='form-control'
@@ -16,10 +16,10 @@ export default {
   props: {
     value: String,
     label: String,
-    styling: String,
+    className: String,
   },
   methods: {
-    emitInput: function(event) {
+    emitInput(event) {
       this.$emit('input', event.target.value);
     }
   }

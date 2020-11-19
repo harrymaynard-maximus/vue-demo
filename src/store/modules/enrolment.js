@@ -7,6 +7,7 @@ export const SET_LIVES_IN_BC = 'setLivesInBC';
 // Personal Info page:
 export const SET_FIRST_NAME = 'setFirstName';
 export const SET_LAST_NAME = 'setLastName';
+export const SET_ADDRESS = 'setAddress';
 export const SET_START_DATE = 'setStartDate';
 export const SET_UPLOADED_IMAGES = 'setUploadedImages';
 
@@ -45,6 +46,9 @@ export default {
     setLastName(state, payload) {
       state.lastName = payload;
     },
+    setAddress(state, payload) {
+      state.address = payload;
+    },
     setStartDate(state, payload) {
       state.startDate = payload;
     },
@@ -63,10 +67,12 @@ export default {
   },
   actions: {
     resetForm({ commit }) {
-      commit(SET_FIRST_NAME, null);
       commit(SET_HAS_ACCEPTED_TERMS, false);
-      commit(SET_LAST_NAME, null);
       commit(SET_LIVES_IN_BC, null);
+      commit(SET_FIRST_NAME, null);
+      commit(SET_LAST_NAME, null);
+      commit(SET_ADDRESS, null);
+      commit(SET_START_DATE, null);
       commit(SET_UPLOADED_IMAGES, []);
       commit(SET_SIGNATURE, null);
       commit(SET_API_RESPONSE, null);
@@ -83,6 +89,9 @@ export default {
     },
     setLastName({ commit }, lastName) {
       commit(SET_LAST_NAME, lastName);
+    },
+    setAddress({ commit }, address) {
+      commit(SET_ADDRESS, address);
     },
     setStartDate({ commit }, startDate) {
       commit(SET_START_DATE, startDate);

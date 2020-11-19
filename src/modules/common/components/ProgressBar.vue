@@ -81,6 +81,9 @@ export default {
   display: flex;
   justify-content: space-around;
 }
+.step-container a {
+  cursor: default;
+}
 .step {
   position: relative;
   -webkit-transform: translateX(-.5em);
