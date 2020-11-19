@@ -105,7 +105,9 @@ export default {
     },
 
     handleBlurLastItem(event) {
-      if (event.target === this.$refs.container.lastElementChild) {
+      if (event.target === this.$refs.container.lastElementChild
+        && event.relatedTarget
+        && !event.relatedTarget.classList.contains('vbst-item')) {
         this.$emit('blur-last-item', event);
       }
     }
