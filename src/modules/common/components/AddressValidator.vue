@@ -31,7 +31,7 @@ export default {
     id: String,
     value: {
       type: String,
-      default: '716 yates',
+      default: null,
     },
     label: String,
     className: String,
@@ -70,8 +70,8 @@ export default {
 
       axios.get(url.href).then((response) => {
         this.data = this.processResponse(response.data);
-        console.log('Response data: ', this.data);
       }).catch((error) => {
+        this.data = [];
         console.log('Error: ', error);
       })
     },

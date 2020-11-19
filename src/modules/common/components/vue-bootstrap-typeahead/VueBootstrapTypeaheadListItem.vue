@@ -5,6 +5,8 @@
     :class="textClasses"
     @mouseover="active = true"
     @mouseout="active = false"
+    @focus="active = true"
+    @blur="active = false; $emit('blur', $event)"
   >
     <slot name="suggestion" v-bind="{ data: data, htmlText: htmlText }">
       <span v-html="htmlText"></span>
@@ -46,3 +48,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.vbst-item:focus {
+  color: #FFF;
+}
+</style>

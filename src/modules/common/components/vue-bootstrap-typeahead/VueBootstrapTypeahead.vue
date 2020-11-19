@@ -35,6 +35,7 @@
       :maxMatches="maxMatches"
       :minMatchingChars="minMatchingChars"
       @hit="handleHit"
+      @blur-last-item="handleBlurLastItem"
     >
       <!-- pass down all scoped slots -->
       <template v-for="(slot, slotName) in $scopedSlots" :slot="slotName" slot-scope="{ data, htmlText }">
@@ -146,11 +147,13 @@ export default {
     handleBlur(evt) {
       const tgt = evt.relatedTarget
       if (tgt && tgt.classList.contains('vbst-item')) {
-              console.log("Blur");
-
         return
       }
       this.isFocused = false
+    },
+
+    handleBlurLastItem() {
+      this.isFocused = false;
     },
 
     handleInput(newValue) {

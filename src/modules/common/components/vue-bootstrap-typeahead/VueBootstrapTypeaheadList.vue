@@ -1,5 +1,5 @@
 <template>
-  <div class="list-group shadow">
+  <div class="list-group shadow" ref="container">
     <vue-bootstrap-typeahead-list-item
       v-for="(item, id) in matchedItems" :key="id"
       :data="item.data"
@@ -7,6 +7,7 @@
       :background-variant="backgroundVariant"
       :text-variant="textVariant"
       @click.native="handleHit(item, $event)"
+      @blur="handleBlurLastItem($event)"
     >
       <template v-if="$scopedSlots.suggestion" slot="suggestion" slot-scope="{ data, htmlText }">
         <slot name="suggestion" v-bind="{ data, htmlText }" />
@@ -63,7 +64,7 @@ export default {
     highlight() {
       return (text) => {
         text = sanitize(text)
-        if (this.query.length === 0) {
+        if (!this.query || this.query.length === 0) {
           return text
         }
         const re = new RegExp(this.escapedQuery, 'gi')
@@ -77,7 +78,7 @@ export default {
     },
 
     matchedItems() {
-      if (this.query.length === 0 || this.query.length < this.minMatchingChars) {
+      if (!this.query || this.query.length === 0 || this.query.length < this.minMatchingChars) {
         return []
       }
 
@@ -101,6 +102,12 @@ export default {
     handleHit(item, evt) {
       this.$emit('hit', item)
       evt.preventDefault()
+    },
+
+    handleBlurLastItem(event) {
+      if (event.target === this.$refs.container.lastElementChild) {
+        this.$emit('blur-last-item', event);
+      }
     }
   }
 }
