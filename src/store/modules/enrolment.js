@@ -8,6 +8,7 @@ export const SET_LIVES_IN_BC = 'setLivesInBC';
 export const SET_FIRST_NAME = 'setFirstName';
 export const SET_LAST_NAME = 'setLastName';
 export const SET_ADDRESS = 'setAddress';
+export const SET_POSTAL_CODE = 'setPostalCode';
 export const SET_START_DATE = 'setStartDate';
 export const SET_UPLOADED_IMAGES = 'setUploadedImages';
 
@@ -26,6 +27,8 @@ export default {
       livesInBC: null,
       firstName: null,
       lastName: null,
+      address: null,
+      postalCode: null,
       startDate: null,
       uploadedImages: [],
       signature: null,
@@ -48,6 +51,9 @@ export default {
     },
     setAddress(state, payload) {
       state.address = payload;
+    },
+    setPostalCode(state, payload) {
+      state.postalCode = payload;
     },
     setStartDate(state, payload) {
       state.startDate = payload;
@@ -72,6 +78,7 @@ export default {
       commit(SET_FIRST_NAME, null);
       commit(SET_LAST_NAME, null);
       commit(SET_ADDRESS, null);
+      commit(SET_POSTAL_CODE, null);
       commit(SET_START_DATE, null);
       commit(SET_UPLOADED_IMAGES, []);
       commit(SET_SIGNATURE, null);
@@ -92,6 +99,9 @@ export default {
     },
     setAddress({ commit }, address) {
       commit(SET_ADDRESS, address);
+    },
+    setPostalCode({ commit }, postalCode) {
+      commit(SET_POSTAL_CODE, postalCode);
     },
     setStartDate({ commit }, startDate) {
       commit(SET_START_DATE, startDate);
