@@ -25,16 +25,13 @@
       v-model="addressSearch"
       @select="selectAddress($event)"
     />
-
-    <PostalCodeInput
-      :label="'Postal Code'"
-      :className="'mt-3'"
-      v-model="postalCode"
-    />
+    
+    <PostalCodeInput id="postalCode"
+      label="Postal Code"
+      className='mt-3'
+      v-model="postalCode"/>
     <div class="text-danger" v-if="$v.postalCode.$dirty && !$v.postalCode.required" aria-live="assertive">Field is required.</div>
-    <div class="text-danger" v-if="$v.postalCode.$dirty && $v.postalCode.required && !$v.postalCode.isBCPostalCodeValidator" aria-live="assertive">Must be a valid BC postal code.</div>
-
-
+    <div class="text-danger" v-if="$v.postalCode.$dirty && $v.postalCode.required && !$v.postalCode.bcPostalCodeValidator" aria-live="assertive">Must be a valid BC postal code.</div>
 
     <div class="mt-3">
       <DateInput
@@ -83,7 +80,7 @@ import {
   SET_UPLOADED_IMAGES
 } from '../../../store/modules/enrolment';
 import strings from '../../../locale/strings.en';
-import { isBCPostalCodeValidator } from '../../common/helpers/validators';
+import { bcPostalCodeValidator } from '../../common/helpers/validators';
 
 export default {
   name: 'EnrolmentPersonalInfo',
@@ -118,7 +115,7 @@ export default {
     },
     postalCode: {
       required,
-      isBCPostalCodeValidator
+      bcPostalCodeValidator
     },
     files: {
       required
