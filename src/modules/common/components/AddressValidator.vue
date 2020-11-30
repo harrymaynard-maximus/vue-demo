@@ -6,7 +6,6 @@
       v-model="query"
       size="md"
       :serializer="s => s.fullAddress"
-      placeholder="Type an address..."
       @hit="selectAddress($event)"
       @input="emitInput($event)"
       ref="typeahead"
@@ -63,9 +62,9 @@ export default {
       }
       const url = new URL(ADDRESS_URL);
       url.searchParams.set('minScore', '50');
-      url.searchParams.set('maxResults', '10')
-      url.searchParams.set('echo', 'true')
-      url.searchParams.set('interpolation', 'adaptive')
+      url.searchParams.set('maxResults', '10');
+      url.searchParams.set('echo', 'true');
+      url.searchParams.set('interpolation', 'adaptive');
       url.searchParams.set('addressString', query);
 
       axios.get(url.href).then((response) => {
@@ -73,7 +72,7 @@ export default {
       }).catch((error) => {
         this.data = [];
         console.log('Error: ', error);
-      })
+      });
     },
     processResponse(data) {
       return data.features.map(feature => {

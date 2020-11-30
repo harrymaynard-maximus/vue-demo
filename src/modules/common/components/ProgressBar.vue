@@ -108,7 +108,6 @@ export default {
   -webkit-transform: translateX(-37%);
   transform: translateX(-37%);
   white-space: nowrap;
-  font-size: small;
   color: #164d80;
 }
 .mobile-step {
