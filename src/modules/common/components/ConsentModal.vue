@@ -13,11 +13,12 @@
               <input type="checkbox" v-model="acceptConditions" /> &nbsp;
               <strong>I have read and understand this information</strong>
             </label>
+            <Captcha @confirm="confirmCaptcha" />
           </div>
           <div class="modal-footer">
             <Button label="Continue"
                     styling="bcgov-normal-blue btn"
-                    :disabled="!acceptConditions"
+                    :disabled="!canContinue"
                     v-on:button-click='accept' />
           </div>
         </div>
@@ -28,24 +29,35 @@
 
 <script>
 import Button from 'vue-shared-components/src/components/button/Button';
+import Captcha from './Captcha';
 
 export default {
   name: 'ConsentModal',
   components: {
-    Button
+    Button,
+    Captcha,
   },
   props: {
     heading: String,
   },
   data: () => {
     return {
-      acceptConditions: false
+      acceptConditions: false,
+      confirmedCaptcha: false,
+    }
+  },
+  computed: {
+    canContinue() {
+      return this.acceptConditions && this.confirmedCaptcha;
     }
   },
   methods: {
     accept: function() {
       this.$emit('accept', true);
     },
+    confirmCaptcha() {
+      this.confirmedCaptcha = true;
+    }
   }
 }
 </script>
