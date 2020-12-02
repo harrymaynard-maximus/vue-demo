@@ -81,7 +81,7 @@ import {
 } from '../../../store/modules/enrolment';
 import strings from '../../../locale/strings.en';
 import { bcPostalCodeValidator } from '../../common/helpers/validators';
-import { scrollTo } from '../../common/helpers/scroll';
+import { scrollTo, scrollToError } from '../../common/helpers/scroll';
 
 export default {
   name: 'EnrolmentPersonalInfo',
@@ -145,6 +145,7 @@ export default {
     nextPage: function () {
       this.$v.$touch()
       if (this.$v.$invalid) {
+        scrollToError();
         return;
       }
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_FIRST_NAME, this.firstName);

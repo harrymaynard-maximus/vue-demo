@@ -29,7 +29,7 @@ import Button from 'vue-shared-components/src/components/button/Button';
 import ConsentModal from '../../common/components/ConsentModal';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
-import { scrollTo } from '../../common/helpers/scroll';
+import { scrollTo, scrollToError } from '../../common/helpers/scroll';
 import { required } from 'vuelidate/lib/validators';
 import moduleNames from '../../../module-names';
 import {
@@ -61,6 +61,7 @@ export default {
     nextPage() {
       this.$v.$touch()
       if (this.$v.$invalid) {
+        scrollToError();
         return;
       }
 
