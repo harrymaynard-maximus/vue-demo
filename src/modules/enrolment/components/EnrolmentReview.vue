@@ -46,6 +46,7 @@ import { CommonImage } from '../../common/models/images';
 import moduleNames from '../../../module-names';
 import { SET_SIGNATURE } from '../../../store/modules/enrolment';
 import strings from '../../../locale/strings.en';
+import { scrollTo } from '../../common/helpers/scroll';
 
 const requiredCommonImageContent = (data) => {
   return data && data.fileContent && data.fileContent !== '';
@@ -99,12 +100,14 @@ export default {
       const path = routes.ENROLMENT_HOME.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
+      scrollTo(0);
     },
     navigateToPersonalInfoPage() {
       pageStateService.setPageIncomplete(routes.ENROLMENT_REVIEW.path);
       const path = routes.ENROLMENT_PERSONAL_INFO.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
+      scrollTo(0);
     }
   },
   beforeRouteLeave(to, from, next) {

@@ -81,6 +81,7 @@ import {
 } from '../../../store/modules/enrolment';
 import strings from '../../../locale/strings.en';
 import { bcPostalCodeValidator } from '../../common/helpers/validators';
+import { scrollTo } from '../../common/helpers/scroll';
 
 export default {
   name: 'EnrolmentPersonalInfo',
@@ -157,6 +158,7 @@ export default {
       const path = routes.ENROLMENT_REVIEW.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
+      scrollTo(0);
     },
   },
   // Required in order to block back navigation on second page.

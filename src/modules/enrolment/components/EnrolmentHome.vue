@@ -29,6 +29,7 @@ import Button from 'vue-shared-components/src/components/button/Button';
 import ConsentModal from '../../common/components/ConsentModal';
 import pageStateService from '../../common/services/page-state-service';
 import routes from '../../../routes';
+import { scrollTo } from '../../common/helpers/scroll';
 import { required } from 'vuelidate/lib/validators';
 import moduleNames from '../../../module-names';
 import {
@@ -69,6 +70,7 @@ export default {
       const path = routes.ENROLMENT_PERSONAL_INFO.path;
       pageStateService.setPageComplete(path);
       this.$router.push(path);
+      scrollTo(0);
     },
     acceptConsentModal() {
       this.$store.dispatch(moduleNames.ENROLMENT + '/' + SET_HAS_ACCEPTED_TERMS, true);
