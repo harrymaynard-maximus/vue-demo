@@ -9,6 +9,7 @@
       <input
         ref="input"
         type="search"
+        :id="id"
         :class="`form-control ${inputClass}`"
         :placeholder="placeholder"
         :aria-label="placeholder"
@@ -61,6 +62,7 @@ export default {
   },
 
   props: {
+    id: String,
     size: {
       type: String,
       default: null,

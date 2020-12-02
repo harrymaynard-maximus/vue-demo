@@ -20,6 +20,7 @@
     <div class="text-danger" v-if="$v.lastName.$dirty && !$v.lastName.minLength" aria-live="assertive">Name must have at least {{$v.lastName.$params.minLength.min}} letters.</div>
 
     <AddressValidator
+      :id="'address-input'"
       :label="'Address'"
       :className="'mt-3'"
       v-model="addressSearch"

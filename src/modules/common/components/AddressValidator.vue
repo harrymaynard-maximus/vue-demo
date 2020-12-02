@@ -2,6 +2,7 @@
   <div :class="className">
     <label :for="id">{{label}}:</label>
     <VueBootstrapTypeahead
+      :id="id"
       :data="data"
       v-model="query"
       size="md"
