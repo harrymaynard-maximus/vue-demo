@@ -1,10 +1,10 @@
 <template>
   <div :class="className">
     <label v-bind:for="'input' + label">{{label}}:</label><br/>
-    <input v-bind:id="'input' + label"
+    <input :id="'input' + label"
            class='form-control'
-           v-bind:value="value"
-           v-on:input="emitInput($event)" />
+           :value="value"
+           @input="emitInput($event)" />
   </div>
 </template>
 
