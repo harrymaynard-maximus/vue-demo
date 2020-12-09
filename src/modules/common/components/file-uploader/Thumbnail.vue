@@ -8,7 +8,6 @@
 </template>
 
 <script>
-
 export default {
   props: {
     imageObject: {
@@ -36,17 +35,11 @@ export default {
   },
   computed: {
     thumbnailClass() {
-      if (this.scaledWidth <= 300) {
-        return 'image-thumbnail';
-      } else {
-        return 'image-thumbnail-width-priority';
-      }
+      return 'image-thumbnail';
     }
   },
   methods: {
-    deleteImage(evt) {
-      console.log('ThumbnailComponent:Delete from thumbnail: %o', evt);
-      console.log('ThumbnailComponent:imageObject:', JSON.stringify(this.imageObject, null, 2));
+    deleteImage() {
       this.$emit('delete', this.imageObject);
     }
   }
