@@ -414,7 +414,7 @@ describe("FileUploader component", () => {
   test("deleteImage()", () => {
     const wrapper = mount(FileUploader, {});
     const image = new CommonImage("content");
-    wrapper.vm.images = [image];
+    wrapper.vm.$emit('input', [image]);
     wrapper.vm.deleteImage(image);
     expect(wrapper.vm.images.length).toBe(0);
   });

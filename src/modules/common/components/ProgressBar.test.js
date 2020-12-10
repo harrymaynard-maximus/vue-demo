@@ -38,6 +38,9 @@ describe("ProgressBar component", () => {
         ]
       }
     });
+    wrapper.vm.$router = {
+      push: () => {}
+    }
     fireEvent.click(wrapper.element.querySelector('.step-container a'))
     expect(wrapper.html()).toMatchSnapshot();
   });

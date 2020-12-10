@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import Button from 'vue-shared-components/src/components/button/Button';
+import Button from './Button';
 import Captcha from './Captcha';
 
 export default {
