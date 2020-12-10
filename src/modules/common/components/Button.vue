@@ -7,40 +7,40 @@
   >
     {{ label }}
     <div v-if="hasLoader" class="bcgov-loader-show">
-      <loader />
+      <Loader />
     </div>
   </button>
 </template>
 
 <script>
-  import Loader from "./Loader.vue";
+import Loader from "./Loader.vue";
 
-  export default {
-    name: "Button",
-    props: {
-      label: {
-        type: String,
-        required: true,
-      },
-      disabled: {
-        type: Boolean,
-        required: false,
-        default: false,
-      },
-      hasLoader: {
-        type: Boolean,
-        required: false,
-        default: false,
-      },
-      styling: {
-        type: String,
-        required: true,
-      }
+export default {
+  name: "Button",
+  components: {
+    Loader,
+  },
+  props: {
+    label: {
+      type: String,
+      required: true,
     },
-    components: {
-      "loader": Loader,
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    hasLoader: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    styling: {
+      type: String,
+      required: true,
     }
   }
+}
 </script>
 
 <style scoped>

@@ -7,8 +7,6 @@
 </template>
 
 <script>
-import { setInterval, clearTimeout } from 'timers';
-
 export default {
   name: 'Captcha',
   data: () => {
@@ -24,12 +22,9 @@ export default {
           'sitekey' : '6LcK9_MZAAAAADr2y0zNSbwoAQ3CX1GIHBOuINs-',
           'callback': self.setConfirmation
         });
-        clearTimeout(timeout);
+        clearInterval(timeout);
       }
     }, 1000);
-  },
-  computed: {
-    
   },
   methods: {
     setConfirmation(token) {
